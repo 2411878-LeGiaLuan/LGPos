@@ -3,242 +3,204 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LGBank POS System v3.0 - Ultimate Edition</title>
+    <title>LGBank POS v4.0 - Global Supremacy</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root { --p: #1a237e; --s: #3949ab; --a: #ff9800; --bg: #f4f6f9; --text: #333; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-        body { background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+        :root { --p: #0f172a; --s: #3b82f6; --a: #f59e0b; --bg: #f8fafc; --card: #ffffff; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: #1e293b; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 
-        /* UI COMPONENTS */
-        .top-nav { background: var(--p); color: #fff; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; z-index: 10; }
-        .banner { background: #fff; padding: 20px; display: flex; justify-content: space-between; border-bottom: 2px solid #ddd; }
-        .report-card { background: linear-gradient(135deg, #3f51b5, #1a237e); color: #fff; padding: 15px; border-radius: 12px; min-width: 250px; }
+        /* UI NÂNG CAO */
+        .top-bar { background: var(--p); color: white; padding: 10px 25px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; border-bottom: 3px solid var(--s); }
+        .dashboard-header { background: var(--card); padding: 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
         
-        .content { flex: 1; padding: 20px; overflow-y: auto; display: block; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; margin: 15px 0 30px; }
-        
-        .card { 
-            background: #fff; padding: 25px 15px; border-radius: 12px; text-align: center; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05); cursor: pointer; transition: 0.3s;
+        /* WIDGETS THÔNG MINH */
+        .widgets { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 20px; }
+        .widget { background: var(--card); padding: 20px; border-radius: 16px; border-left: 5px solid var(--s); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .widget h4 { font-size: 12px; color: #64748b; text-transform: uppercase; }
+        .widget p { font-size: 24px; font-weight: 800; margin-top: 5px; }
+
+        /* MAIN GRID */
+        .content { flex: 1; padding: 0 20px 20px; overflow-y: auto; }
+        .feature-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+        .f-card { 
+            background: var(--card); padding: 30px 20px; border-radius: 20px; text-align: center; 
+            cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid #e2e8f0;
         }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-        .card i { font-size: 32px; display: block; margin-bottom: 12px; color: var(--s); }
-        .card.primary-btn { background: #e3f2fd; border: 1.5px solid #2196f3; }
+        .f-card:hover { transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); border-color: var(--s); }
+        .f-card i { font-size: 35px; margin-bottom: 15px; display: block; }
 
-        /* FULLSCREEN SCREENS */
-        .screen { position: fixed; inset: 0; background: var(--bg); z-index: 100; display: none; flex-direction: column; }
-        .screen-header { background: #333; color: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
-        .close-btn { cursor: pointer; font-size: 20px; background: rgba(255,255,255,0.1); padding: 5px 15px; border-radius: 5px; }
+        /* MÀN HÌNH BÁN HÀNG (SQUARE STYLE) */
+        .screen { position: fixed; inset: 0; background: #f1f5f9; z-index: 1000; display: none; flex-direction: column; animation: slideUp 0.4s ease; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        
+        .pos-body { display: grid; grid-template-columns: 1fr 400px; flex: 1; overflow: hidden; }
+        .product-zone { padding: 25px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; align-content: start; }
+        .p-card { background: white; border-radius: 15px; padding: 20px; text-align: center; cursor: pointer; border: 1px solid #e2e8f0; font-weight: 600; }
+        .p-card:active { background: var(--s); color: white; }
 
-        /* POS SALES LAYOUT */
-        .pos-container { display: grid; grid-template-columns: 1fr 380px; flex: 1; overflow: hidden; }
-        .menu-area { padding: 20px; overflow-y: auto; background: #eaeff2; }
-        .cart-area { background: #fff; border-left: 1px solid #ddd; display: flex; flex-direction: column; }
-        .product-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; }
-        .p-item { background: #fff; border-radius: 10px; padding: 15px; text-align: center; cursor: pointer; border: 1px solid #eee; }
-        .cart-items { flex: 1; padding: 15px; overflow-y: auto; }
-        .cart-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
-        .btn-pay { background: #2ecc71; color: #fff; border: none; padding: 20px; font-size: 18px; font-weight: bold; cursor: pointer; }
-
-        /* TABLES */
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #fff; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
-        th { background: #f8f9fa; font-size: 13px; text-transform: uppercase; }
+        .checkout-zone { background: white; border-left: 1px solid #e2e8f0; display: flex; flex-direction: column; }
+        .cart-list { flex: 1; padding: 20px; overflow-y: auto; }
+        .cart-item { display: flex; justify-content: space-between; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px dotted #cbd5e1; }
+        
+        /* NÚT THANH TOÁN "ĐỈNH" */
+        .pay-footer { padding: 25px; border-top: 1px solid #e2e8f0; }
+        .btn-main { background: #10b981; color: white; width: 100%; padding: 20px; border-radius: 12px; border: none; font-size: 18px; font-weight: 700; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div class="top-nav">
-        <div>● HỆ THỐNG POS CHUYÊN NGHIỆP - NHÂN VIÊN: GIA LUÂN</div>
-        <div id="clock">05/04/2026 10:20:00</div>
+    <div class="top-bar">
+        <div><strong>LGPos GLOBAL v4.0</strong> ● Cloud Sync: <span style="color:#10b981">Online</span></div>
+        <div id="live-time">05/04/2026 10:30:00</div>
     </div>
 
-    <div class="banner">
+    <div class="dashboard-header">
         <div>
-            <h1 style="color:var(--p)">LGBank POS v3.0 Ultimate</h1>
-            <p style="font-size:13px; color:#666;">Cửa hàng: Hồng Trà Hòa Bình | IP: 192.168.1.117</p>
+            <h1 style="font-size: 28px;">HỒNG TRÀ HOÀ BÌNH</h1>
+            <p style="color:#64748b">Thiết bị POS-Master-01 | IP: 192.168.1.117</p>
         </div>
-        <div class="report-card">
-            <div style="font-size:12px; opacity:0.8">Doanh thu ca hiện tại</div>
-            <div id="rev-val" style="font-size:28px; font-weight:bold">0 đ</div>
+        <div style="display:flex; gap:10px;">
+            <button onclick="toggleTheme()" style="padding:10px; border-radius:8px; border:1px solid #ddd; background:#fff">🌙 Chế độ tối</button>
+            <button onclick="location.reload()" style="padding:10px; border-radius:8px; background:var(--s); color:white; border:none">🔄 Làm mới dữ liệu</button>
         </div>
+    </div>
+
+    <div class="widgets">
+        <div class="widget"><h4>Doanh thu (Real-time)</h4><p id="rev-display">0 đ</p></div>
+        <div class="widget" style="border-left-color:#10b981"><h4>Số đơn hôm nay</h4><p id="order-count">0</p></div>
+        <div class="widget" style="border-left-color:#f59e0b"><h4>Khách hàng mới</h4><p>24</p></div>
     </div>
 
     <div class="content">
-        <h3 style="border-left: 5px solid var(--a); padding-left: 10px;">NGHIỆP VỤ BÁN HÀNG</h3>
-        <div class="grid">
-            <div class="card primary-btn" onclick="openScreen('sales-screen')"><i>🛒</i><b>Bán hàng (F1)</b></div>
-            <div class="card" onclick="openScreen('order-screen')"><i>📄</i><b>Đơn hàng</b></div>
-            <div class="card" onclick="openScreen('table-screen')"><i>🏠</i><b>Sơ đồ bàn</b></div>
-        </div>
-
-        <h3 style="border-left: 5px solid var(--a); padding-left: 10px;">QUẢN TRỊ HỆ THỐNG</h3>
-        <div class="grid">
-            <div class="card" onclick="openScreen('menu-editor')"><i>🍴</i><b>Cài đặt Menu</b></div>
-            <div class="card" onclick="openScreen('shift-screen')"><i>🕒</i><b>Quản lý Ca</b></div>
-            <div class="card" onclick="simulateConnect()"><i>🖨️</i><b>Máy in & Thiết bị</b></div>
-            <div class="card" onclick="openScreen('inventory-screen')"><i>📦</i><b>Kho hàng</b></div>
+        <div class="feature-grid">
+            <div class="f-card" onclick="openPOS()"><i>🛍️</i><b>BÁN HÀNG (F1)</b></div>
+            <div class="f-card" onclick="showKDS()"><i>👨‍🍳</i><b>NHÀ BẾP (KDS)</b></div>
+            <div class="f-card" onclick="showCRM()"><i>💎</i><b>KHÁCH HÀNG (CRM)</b></div>
+            <div class="f-card" onclick="showAnalytics()"><i>📊</i><b>BÁO CÁO AI</b></div>
+            <div class="f-card" onclick="showInventory()"><i>📦</i><b>KHO HÀNG</b></div>
+            <div class="f-card" onclick="showSettings()"><i>⚙️</i><b>CẤU HÌNH</b></div>
         </div>
     </div>
 
-    <div id="sales-screen" class="screen">
-        <div class="screen-header">
-            <h3>MÀN HÌNH BÁN HÀNG</h3>
-            <div class="close-btn" onclick="closeScreen('sales-screen')">Đóng</div>
+    <div id="pos-screen" class="screen">
+        <div class="top-bar" style="background:#1e293b; padding:15px 25px">
+            <h3 onclick="closePOS()" style="cursor:pointer">✕ ĐÓNG QUẦY</h3>
+            <div style="background:rgba(255,255,255,0.1); padding:5px 15px; border-radius:20px;">Ca làm việc: #46B09</div>
         </div>
-        <div class="pos-container">
-            <div class="menu-area">
-                <div class="product-list" id="pos-menu"></div>
-            </div>
-            <div class="cart-area">
-                <div style="padding:15px; font-weight:bold; background:#f8f9fa">CHI TIẾT ĐƠN HÀNG</div>
-                <div class="cart-items" id="cart-content"></div>
-                <div style="padding:20px; border-top: 2px dashed #ddd">
-                    <div style="display:flex; justify-content:space-between; font-size:20px; font-weight:bold; margin-bottom:15px;">
-                        <span>TỔNG CỘNG:</span>
-                        <span id="total-cart" style="color:var(--a)">0 đ</span>
+        <div class="pos-body">
+            <div class="product-zone" id="menu-grid"></div>
+            <div class="checkout-zone">
+                <div style="padding:20px; background:#f8fafc; border-bottom:1px solid #e2e8f0">
+                    <input type="text" id="cust-phone" placeholder="Nhập SĐT khách hàng (Tích điểm)..." style="width:100%; padding:10px; border-radius:8px; border:1px solid #cbd5e1">
+                </div>
+                <div class="cart-list" id="cart-items"></div>
+                <div class="pay-footer">
+                    <div style="display:flex; justify-content:space-between; font-size:22px; font-weight:900; margin-bottom:20px;">
+                        <span>TỔNG:</span><span id="cart-total" style="color:var(--s)">0 đ</span>
                     </div>
-                    <button class="btn-pay" onclick="doPayment()">XÁC NHẬN THANH TOÁN</button>
+                    <button class="btn-main" onclick="processCheckout()">XÁC NHẬN THANH TOÁN (F12)</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="menu-editor" class="screen">
-        <div class="screen-header">
-            <h3>QUẢN LÝ THỰC ĐƠN</h3>
-            <div class="close-btn" onclick="closeScreen('menu-editor')">Lưu & Đóng</div>
-        </div>
-        <div style="padding:30px;">
-            <button onclick="addNewProduct()" style="padding:10px 20px; background:var(--p); color:#fff; border:none; border-radius:5px; margin-bottom:20px;">+ Thêm món mới</button>
-            <table>
-                <thead><tr><th>Tên món</th><th>Giá bán</th><th>Thao tác</th></tr></thead>
-                <tbody id="menu-table-body"></tbody>
-            </table>
-        </div>
-    </div>
-
-    <div id="shift-screen" class="screen">
-        <div class="screen-header"><h3>QUẢN LÝ CA LÀM VIỆC</h3><div class="close-btn" onclick="closeScreen('shift-screen')">Đóng</div></div>
-        <div style="padding:30px;">
-            <div style="display:flex; gap:10px; margin-bottom:20px;">
-                <button onclick="Swal.fire('Thành công','Đã mở ca mới','success')" style="padding:15px; background:#2ecc71; color:#fff; border:none; border-radius:8px;">BẮT ĐẦU CA MỚI</button>
-                <button onclick="Swal.fire('Thông báo','Đã chốt sổ và đóng ca','info')" style="padding:15px; background:#e74c3c; color:#fff; border:none; border-radius:8px;">KẾT THÚC CA</button>
-            </div>
-            <table>
-                <thead><tr><th>Mã Ca</th><th>Nhân viên</th><th>Giờ mở</th><th>Trạng thái</th></tr></thead>
-                <tbody><tr><td>#SH001</td><td>Gia Luân</td><td>08:00</td><td>Đang hoạt động</td></tr></tbody>
-            </table>
-        </div>
-    </div>
-
 <script>
-    // DỮ LIỆU KHỞI TẠO
-    let menuData = JSON.parse(localStorage.getItem('LGB_MENU')) || [
-        { id: 1, name: 'Hồng Trà Sữa', price: 25000 },
-        { id: 2, name: 'Trà Đào Cam Sả', price: 45000 },
-        { id: 3, name: 'Cà Phê Muối', price: 35000 }
+    let menu = JSON.parse(localStorage.getItem('LG_MENU')) || [
+        {id:1, name:'Hồng Trà Sữa', price:25000, cat:'Trà'},
+        {id:2, name:'Trà Đào Cam Sả', price:45000, cat:'Trà'},
+        {id:3, name:'Cà Phê Muối', price:35000, cat:'Cafe'},
+        {id:4, name:'Bánh Tiramisu', price:55000, cat:'Food'}
     ];
-    let cart = [];
-    let dailyRevenue = parseInt(localStorage.getItem('LGB_REV')) || 0;
+    let currentCart = [];
+    let stats = JSON.parse(localStorage.getItem('LG_STATS')) || {rev:0, count:0};
 
-    // ĐỒNG HỒ
-    setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleString('vi-VN'); }, 1000);
+    // ĐỒNG HỒ & ĐỊNH DẠNG
+    setInterval(() => { document.getElementById('live-time').innerText = new Date().toLocaleString('vi-VN'); }, 1000);
+    const fmt = (num) => new Intl.NumberFormat('vi-VN').format(num) + ' đ';
 
-    function openScreen(id) { 
-        document.getElementById(id).style.display = 'flex'; 
-        if(id === 'sales-screen') renderPosMenu();
-        if(id === 'menu-editor') renderMenuTable();
+    function openPOS() {
+        document.getElementById('pos-screen').style.display = 'flex';
+        renderMenu();
     }
-    function closeScreen(id) { document.getElementById(id).style.display = 'none'; }
+    function closePOS() { document.getElementById('pos-screen').style.display = 'none'; }
 
-    // POS LOGIC
-    function renderPosMenu() {
-        const div = document.getElementById('pos-menu');
-        div.innerHTML = menuData.map(m => `
-            <div class="p-item" onclick="addToCart(${m.id})">
-                <b>${m.name}</b><br>
-                <span style="color:var(--a)">${m.price.toLocaleString()} đ</span>
+    function renderMenu() {
+        document.getElementById('menu-grid').innerHTML = menu.map(p => `
+            <div class="p-card" onclick="addToCart(${p.id})">
+                <div style="font-size:12px; color:#64748b">${p.cat}</div>
+                <div style="margin:10px 0">${p.name}</div>
+                <div style="color:var(--s)">${fmt(p.price)}</div>
             </div>
         `).join('');
     }
 
     function addToCart(id) {
-        const p = menuData.find(x => x.id === id);
-        cart.push(p);
+        const p = menu.find(x => x.id === id);
+        currentCart.push(p);
         updateCartUI();
     }
 
     function updateCartUI() {
-        const div = document.getElementById('cart-content');
+        const list = document.getElementById('cart-items');
         let total = 0;
-        div.innerHTML = cart.map((item, idx) => {
+        list.innerHTML = currentCart.map((item, idx) => {
             total += item.price;
-            return `<div class="cart-row"><span>${item.name}</span><b>${item.price.toLocaleString()}</b></div>`;
+            return `<div class="cart-item"><span>${item.name}</span><b>${fmt(item.price)}</b></div>`;
         }).join('');
-        document.getElementById('total-cart').innerText = total.toLocaleString() + ' đ';
+        document.getElementById('cart-total').innerText = fmt(total);
     }
 
-    function doPayment() {
-        if(cart.length === 0) return;
-        const total = cart.reduce((s, i) => s + i.price, 0);
-        dailyRevenue += total;
-        localStorage.setItem('LGB_REV', dailyRevenue);
-        document.getElementById('rev-val').innerText = dailyRevenue.toLocaleString() + ' đ';
+    function processCheckout() {
+        if(currentCart.length === 0) return;
+        const total = currentCart.reduce((s, i) => s + i.price, 0);
         
-        Swal.fire({ title: 'Thanh toán thành công!', text: 'Đơn hàng đã được in hóa đơn', icon: 'success' });
-        cart = []; updateCartUI(); closeScreen('sales-screen');
-    }
-
-    // MENU EDITOR LOGIC
-    function renderMenuTable() {
-        const tbody = document.getElementById('menu-table-body');
-        tbody.innerHTML = menuData.map(m => `
-            <tr>
-                <td>${m.name}</td>
-                <td>${m.price.toLocaleString()} đ</td>
-                <td><button onclick="deleteProduct(${m.id})" style="color:red; border:none; background:none; cursor:pointer;">Xóa</button></td>
-            </tr>
-        `).join('');
-    }
-
-    function addNewProduct() {
+        // GIẢ LẬP QR CODE THANH TOÁN (Toast/Square Style)
         Swal.fire({
-            title: 'Thêm món mới',
-            html: `<input id="n" class="swal2-input" placeholder="Tên món">
-                   <input id="p" type="number" class="swal2-input" placeholder="Giá bán">`,
-            confirmButtonText: 'Lưu lại',
-            preConfirm: () => {
-                const name = document.getElementById('n').value;
-                const price = parseInt(document.getElementById('p').value);
-                if (!name || !price) return Swal.showValidationMessage('Vui lòng nhập đủ');
-                return { name, price };
-            }
+            title: 'QUÉT MÃ THANH TOÁN',
+            html: `<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=PAYMENT_LGBANK_${total}" style="margin:20px"><br>Số tiền: <b>${fmt(total)}</b>`,
+            showCancelButton: true,
+            confirmButtonText: 'Đã nhận tiền mặt',
+            cancelButtonText: 'Hủy đơn'
         }).then((res) => {
             if(res.isConfirmed) {
-                const newItem = { id: Date.now(), name: res.value.name, price: res.value.price };
-                menuData.push(newItem);
-                localStorage.setItem('LGB_MENU', JSON.stringify(menuData));
-                renderMenuTable();
+                stats.rev += total;
+                stats.count += 1;
+                localStorage.setItem('LG_STATS', JSON.stringify(stats));
+                refreshStats();
+                
+                // HIỆU ỨNG THÀNH CÔNG
+                Swal.fire({ title:'THÀNH CÔNG!', text:'Đơn hàng đã được bắn sang bếp (KDS)', icon:'success', timer:2000 });
+                currentCart = []; updateCartUI(); closePOS();
             }
         });
     }
 
-    function deleteProduct(id) {
-        menuData = menuData.filter(x => x.id !== id);
-        localStorage.setItem('LGB_MENU', JSON.stringify(menuData));
-        renderMenuTable();
-    }
-
-    function simulateConnect() {
-        Swal.fire({ title: 'Đang tìm thiết bị...', timer: 1500, didOpen: () => Swal.showLoading() }).then(() => {
-            Swal.fire('Đã kết nối', 'Máy in hóa đơn (Xprinter XP-N160II) đã sẵn sàng', 'success');
+    function showKDS() {
+        Swal.fire({
+            title: 'KITCHEN DISPLAY SYSTEM',
+            html: `<div style="text-align:left; font-size:14px">
+                <div style="background:#fff3e0; padding:10px; border-radius:8px; margin-bottom:10px">
+                    <b>Đơn #RC6PY - BÀN 05</b><br>
+                    - 2 Hồng Trà Sữa (Ít đá)<br>- 1 Bánh Tiramisu
+                </div>
+            </div>`,
+            confirmButtonText: 'HOÀN TẤT CHẾ BIẾN'
         });
     }
 
-    // Init UI
-    document.getElementById('rev-val').innerText = dailyRevenue.toLocaleString() + ' đ';
+    function refreshStats() {
+        document.getElementById('rev-display').innerText = fmt(stats.rev);
+        document.getElementById('order-count').innerText = stats.count;
+    }
+
+    function toggleTheme() {
+        document.body.style.filter = document.body.style.filter === 'invert(1)' ? 'invert(0)' : 'invert(1)';
+    }
+
+    // KHỞI TẠO
+    refreshStats();
 </script>
 </body>
 </html>
