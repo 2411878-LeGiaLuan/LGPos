@@ -2,30 +2,182 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>LGBank POS System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LGBank POS Ultra v1.0</title>
     <style>
-        body { font-family: sans-serif; background: #f4f7f6; margin: 0; }
-        .header { background: #1a237e; color: white; padding: 15px; display: flex; justify-content: space-between; }
-        .main-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; padding: 20px; }
-        .feature-card { background: white; padding: 20px; border-radius: 8px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; }
-        .feature-card:hover { transform: translateY(-5px); transition: 0.3s; }
-        .status-bar { background: #e8eaf6; padding: 10px 20px; font-size: 12px; color: #555; }
+        :root {
+            --primary: #1a237e; --secondary: #3949ab; --accent: #ff9800;
+            --bg: #f0f2f5; --text: #2c3e50; --white: #ffffff;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        body { background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; }
+
+        /* Top Header */
+        .top-nav {
+            background: var(--primary); color: white; padding: 10px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 14px; font-weight: 500;
+        }
+        .user-info { display: flex; gap: 20px; align-items: center; }
+        .logout-btn { background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 4px; cursor: pointer; }
+
+        /* Store Banner */
+        .store-banner {
+            background: var(--white); padding: 20px; display: flex; 
+            justify-content: space-between; border-bottom: 1px solid #ddd;
+        }
+        .store-details h1 { font-size: 22px; color: var(--primary); margin-bottom: 5px; }
+        .store-details p { font-size: 13px; color: #777; }
+
+        /* Quick Reports Section */
+        .report-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; padding: 15px; border-radius: 12px; width: 300px;
+        }
+
+        /* Main Grid Menu */
+        .main-content { padding: 20px; height: calc(100vh - 180px); overflow-y: auto; }
+        .menu-section { margin-bottom: 30px; }
+        .section-title { font-size: 16px; font-weight: bold; margin-bottom: 15px; border-left: 4px solid var(--accent); padding-left: 10px; }
+        
+        .grid-container {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px;
+        }
+        .card {
+            background: var(--white); padding: 20px; border-radius: 10px;
+            text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            cursor: pointer; transition: 0.2s; border: 1px solid transparent;
+        }
+        .card:active { transform: scale(0.95); background: #e8eaf6; }
+        .card i { font-size: 30px; display: block; margin-bottom: 10px; color: var(--secondary); }
+        .card span { font-size: 14px; font-weight: 600; }
+
+        /* Modal System */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+            display: none; justify-content: center; align-items: center; z-index: 100;
+        }
+        .modal-content {
+            background: var(--white); width: 90%; max-width: 800px; height: 80vh;
+            border-radius: 15px; overflow: hidden; display: flex; flex-direction: column;
+        }
+        .modal-header { background: var(--secondary); color: white; padding: 15px; display: flex; justify-content: space-between; }
+        .modal-body { padding: 20px; overflow-y: auto; flex: 1; }
+
+        /* Table style for Shift/Orders */
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; background: #f8f9fa; padding: 12px; font-size: 13px; }
+        td { padding: 12px; border-bottom: 1px solid #eee; font-size: 14px; }
+        .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; background: #e3f2fd; color: #1976d2; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <span>LGBank POS - Nhân viên: Thu ngân 01</span>
-        <span>05/04/2026 09:10</span>
+
+    <div class="top-nav">
+        <div class="user-info">
+            <span>● TN 5052HB CA1 - Thu ngân</span>
+            <span>Đổi mật khẩu</span>
+        </div>
+        <div class="user-info">
+            <span id="live-clock">05/04/2026 09:10:40</span>
+            <div class="logout-btn">Thoát ứng dụng</div>
+        </div>
     </div>
-    <div class="status-bar">
-        Cửa hàng: Hồng Trà Hòa Bình | IP: 192.168.1.117 | Trạng thái: Đang kết nối
+
+    <div class="store-banner">
+        <div class="store-details">
+            <h1>GIẢI PHÁP QUẢN LÝ LGBANK POS</h1>
+            <p>HỒNG TRÀ HOÀ BÌNH 50-52 HOÀ BÌNH</p>
+            <p>Thiết bị: E22J1921PVZZ | IP: 192.168.1.117</p>
+        </div>
+        <div class="report-box" onclick="alert('Xem báo cáo chi tiết')">
+            <div style="font-size: 12px; opacity: 0.8;">Báo cáo nhanh hôm nay</div>
+            <div style="font-size: 24px; font-weight: bold; margin-top: 5px;">2,450,000 đ</div>
+            <div style="font-size: 11px; margin-top: 5px;">↑ 12% so với hôm qua</div>
+        </div>
     </div>
-    <div class="main-grid">
-        <div class="feature-card"><b>1. Góp ý, hỗ trợ</b></div>
-        <div class="feature-card"><b>2. Quản lý kết nối</b></div>
-        <div class="feature-card"><b>6. Quản lý máy in</b></div>
-        <div class="feature-card"><b>11. Nhật ký Order</b></div>
-        <div class="feature-card" style="background: #fff3e0;"><b>Quản lý Ca</b></div>
+
+    <div class="main-content">
+        <div class="menu-section">
+            <div class="section-title">Thiết lập cửa hàng</div>
+            <div class="grid-container">
+                <div class="card"><i>💬</i><span>Góp ý, hỗ trợ</span></div>
+                <div class="card"><i>🔗</i><span>Quản lý kết nối</span></div>
+                <div class="card" onclick="openShiftModal()"><i>🕒</i><span>Quản lý Ca</span></div>
+                <div class="card"><i>🖨️</i><span>Quản lý máy in</span></div>
+                <div class="card"><i>🗺️</i><span>Quản lý khu vực</span></div>
+                <div class="card"><i>📝</i><span>Nhật ký Order</span></div>
+            </div>
+        </div>
+
+        <div class="menu-section">
+            <div class="section-title">Nghiệp vụ bán hàng</div>
+            <div class="grid-container">
+                <div class="card" style="background: #e3f2fd; border: 1px solid #2196f3;"><i>🛒</i><span style="color: #1976d2;">Bán hàng (F1)</span></div>
+                <div class="card" onclick="openOrderModal()"><i>📄</i><span>Danh sách đơn hàng</span></div>
+                <div class="card"><i>💰</i><span>Quản lý thu, chi</span></div>
+                <div class="card"><i>📦</i><span>Quản lý kho</span></div>
+            </div>
+        </div>
     </div>
+
+    <div id="shiftModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Danh sách ca gần đây</h3>
+                <span style="cursor:pointer" onclick="closeModals()">✕</span>
+            </div>
+            <div class="modal-body">
+                <table>
+                    <thead>
+                        <tr><th>Mã ca</th><th>Nhân viên</th><th>Giờ mở</th><th>Trạng thái</th></tr>
+                    </thead>
+                    <tbody id="shiftTable">
+                        <tr><td>#46B09</td><td>tn5052hb1@gmail.com</td><td>05/04/2026 08:46</td><td><span class="status-badge">Đang mở</span></td></tr>
+                        <tr><td>#94ABJ</td><td>tn5052hb1@gmail.com</td><td>04/04/2026 13:18</td><td><span>Đã đóng</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="orderModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Danh sách đơn hàng</h3>
+                <span style="cursor:pointer" onclick="closeModals()">✕</span>
+            </div>
+            <div class="modal-body">
+                <table>
+                    <thead>
+                        <tr><th>Số HD</th><th>Thời gian</th><th>Loại</th><th>Tổng tiền</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>#RC6PY - 050004</td><td>09:15</td><td>Mang về</td><td>25,000 đ</td></tr>
+                        <tr><td>#0MK4A - 050003</td><td>08:55</td><td>Mang về</td><td>70,000 đ</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Cập nhật đồng hồ thời gian thực
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('live-clock').innerText = now.toLocaleString('vi-VN');
+        }, 1000);
+
+        function openShiftModal() { document.getElementById('shiftModal').style.display = 'flex'; }
+        function openOrderModal() { document.getElementById('orderModal').style.display = 'flex'; }
+        function closeModals() { 
+            document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); 
+        }
+
+        // Đóng modal khi click ra ngoài
+        window.onclick = function(event) {
+            if (event.target.className === 'modal-overlay') closeModals();
+        }
+    </script>
 </body>
 </html>
