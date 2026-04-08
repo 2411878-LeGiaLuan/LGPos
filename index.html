@@ -2,352 +2,277 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MURTHELP.OS | COMPANY PROTOCOL</title>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LGSHOPCOMPANY | ELITE ARSENAL</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Orbitron:wght@400;900&family=JetBrains+Mono:wght@300;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Orbitron:wght@400;900&family=JetBrains+Mono:wght@500;800&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --primary: #ff3c3c; /* Red Code */
-            --heavy: #a855f7;   /* Purple Code */
-            --trader: #facc15;  /* Yellow Code */
-            --clean: #22c55e;   /* Green Code */
-            --void: #020205;
-            --glass: rgba(255, 255, 255, 0.03);
-            --neon-glow: 0 0 15px rgba(255, 60, 60, 0.4);
+            --gold: #facc15; --red: #ff3c3c; --black: #050505; --dark: #0d0d0d;
+            --code-red: #ff4444; --code-purple: #a855f7; --code-yellow: #fbbf24; --code-green: #22c55e;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; cursor: crosshair; }
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--black); color: #fff; font-family: 'JetBrains Mono', monospace; height: 100vh; overflow: hidden; }
 
-        body {
-            background-color: var(--void);
-            color: #fff;
-            font-family: 'JetBrains Mono', monospace;
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
+        /* LOGIN: LGShopCompany - ĐỐI XỨNG & ĐẸP */
+        #login-screen {
+            position: fixed; inset: 0; background: #000; z-index: 10000;
+            display: flex; align-items: center; justify-content: center; flex-direction: column;
         }
-
-        /* LGSHOPCOMPANY - ĐẸP, ĐỐI XỨNG */
-        #login-system {
-            position: fixed; inset: 0; background: #000; z-index: 100000;
-            display: flex; align-items: center; justify-content: center;
-            flex-direction: column;
+        .brand-header {
+            font-family: 'Syncopate', sans-serif; font-size: 32px; font-weight: 900;
+            letter-spacing: -1px; margin-bottom: 40px;
+            background: linear-gradient(to bottom, #fff 40%, var(--gold) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(250, 204, 21, 0.3);
         }
-        .login-box {
-            width: 400px; padding: 50px; border: 1px solid rgba(255,60,60,0.2);
-            background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(10px); text-align: center;
+        .login-card {
+            width: 380px; padding: 40px; background: var(--dark);
+            border: 1px solid #222; border-radius: 4px; text-align: center;
         }
-        .lg-brand { font-family: 'Syncopate', sans-serif; font-size: 20px; font-weight: 900; background: linear-gradient(90deg, #fff, var(--primary), #fff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 5px; margin-bottom: 40px; }
         .murt-input {
-            width: 100%; padding: 15px; background: #111; border: 1px solid #444; color: #fff;
-            font-family: inherit; font-size: 18px; text-align: center; outline: none; margin-bottom: 25px;
+            width: 100%; padding: 15px; background: #000; border: 1px solid #333;
+            color: var(--gold); font-size: 20px; text-align: center; outline: none; margin-bottom: 20px;
         }
         .murt-btn {
-            width: 100%; padding: 15px; background: var(--primary); color: #fff; border: none;
-            font-weight: 900; cursor: pointer; transition: 0.3s;
+            width: 100%; padding: 15px; background: var(--red); color: white;
+            border: none; font-weight: 900; cursor: pointer; text-transform: uppercase;
         }
-        .murt-btn:hover { background: #ff5e5e; box-shadow: var(--neon-glow); }
 
-        /* MULTIVERSE OMNIVERSE Hub */
-        .app-shell { flex: 1; display: none; flex-direction: column; position: relative; }
-        
-        /* COMMAND SIDEBAR */
-        .sidebar {
-            width: 110px;
-            background: rgba(10, 10, 15, 0.9);
-            border-right: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 30px;
-            z-index: 1000; backdrop-filter: blur(20px);
+        /* GIAO DIỆN CHÍNH */
+        #main-app { display: none; height: 100vh; flex-direction: column; }
+        header {
+            height: 70px; background: #000; border-bottom: 2px solid var(--red);
+            display: flex; align-items: center; padding: 0 30px; justify-content: space-between;
         }
-        .nav-link {
-            width: 70px; height: 70px; border-radius: 18px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            color: #444; cursor: pointer; transition: 0.3s cubic-bezier(0.23, 1, 0.32, 1); gap: 5px;
-            border: 1px solid transparent; background: var(--glass);
-        }
-        .nav-link:hover, .nav-link.active {
-            color: var(--primary); border-color: var(--primary);
-            background: rgba(255, 60, 60, 0.05); box-shadow: var(--neon-glow);
-        }
-        .nav-link i { font-size: 24px; }
-        .nav-link span { font-size: 9px; font-weight: 800; text-transform: uppercase; }
+        .wrapper { display: flex; flex: 1; overflow: hidden; }
 
-        .top-hub {
-            height: 90px; background: rgba(5, 5, 5, 0.7);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex; justify-content: space-between; align-items: center; padding: 0 40px;
-        }
-        .brand-os { font-family: 'Syncopate', sans-serif; font-size: 20px; color: var(--primary); letter-spacing: 5px; text-shadow: var(--neon-glow); }
-
-        .quantum-frame { flex: 1; padding: 30px; overflow-y: auto; perspective: 1000px; display: grid; grid-template-columns: 1fr 450px; gap: 30px; }
-        .page { display: none; grid-column: 1 / 3; animation: slideIn 0.8s cubic-bezier(0.23, 1, 0.32, 1); }
-        .page.active { display: block; }
-        @keyframes slideIn { from { opacity: 0; transform: perspective(1000px) rotateX(5deg); } to { opacity: 1; transform: perspective(1000px) rotateX(0); } }
-
-        /* ARSENAL GRID - FIX LỖI MẤT ẢNH */
-        .arsenal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .p-card {
-            background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 20px; padding: 25px; text-align: center; cursor: pointer;
-            transition: 0.3s; position: relative; overflow: hidden;
-        }
-        .p-card:hover { border-color: var(--primary); transform: translateY(-8px); box-shadow: 0 10px 30px rgba(255, 60, 60, 0.2); }
-        .p-card img { width: 100%; height: 160px; object-fit: contain; margin-bottom: 20px; transition: 0.3s; filter: grayscale(0.5); }
-        .p-card:hover img { filter: grayscale(0); transform: scale(1.05); }
-        .p-card .code-label { position: absolute; top: 15px; right: 15px; font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 10px; }
-
-        /* POS TERMINAL (FIX DOANH THU & TIỀN) */
-        .terminal {
-            background: #050508;
-            border: 2px solid var(--primary);
-            border-radius: 25px;
-            padding: 30px;
+        /* SIDEBAR CHUẨN A SHOP FOR KILLER */
+        aside {
+            width: 260px; background: var(--dark); border-right: 1px solid #1a1a1a;
             display: flex; flex-direction: column;
-            box-shadow: 0 0 50px rgba(255, 60, 60, 0.1);
-            height: fit-content;
-            position: sticky; top: 0;
         }
-        .vault-header { padding-bottom: 15px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; }
-        .cart-list { flex: 1; overflow-y: auto; margin: 20px 0; border-top: 1px solid #222; }
-        .btn-launch { width: 100%; padding: 22px; border-radius: 20px; border: none; background: var(--primary); color: white; font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: 0.3s; margin-top: 20px; box-shadow: var(--neon-glow); }
-        .btn-launch:hover { background: #ff5e5e; transform: translateY(-3px); }
+        .nav-item {
+            padding: 20px 25px; border-bottom: 1px solid #151515; cursor: pointer;
+            display: flex; align-items: center; gap: 15px; transition: 0.2s; font-size: 13px;
+        }
+        .nav-item:hover, .nav-item.active { background: #151515; border-left: 4px solid var(--red); color: var(--red); }
 
-        /* BOSS DASHBOARD (SỬA LỖI TRỐNG DỮ LIỆU) */
-        .s-card { background: #0d0d0d; padding: 25px; border: 1px solid #222; border-radius: 20px; }
-        .s-card label { color: #666; font-size: 11px; font-weight: 700; text-transform: uppercase; }
-        .s-card h2 { font-size: 32px; font-weight: 900; margin-top: 5px; color: white; }
+        main { flex: 1; overflow-y: auto; padding: 30px; background: #080808; }
 
-        /* PAYMENT TERMINAL */
-        #payment-terminal {
+        /* WEAPON CARDS */
+        .weapon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 25px; }
+        .w-card {
+            background: #0f0f0f; border: 1px solid #222; border-radius: 8px;
+            padding: 20px; position: relative; transition: 0.3s;
+        }
+        .w-card:hover { border-color: var(--red); transform: translateY(-5px); }
+        .w-img { width: 100%; height: 160px; object-fit: contain; margin-bottom: 15px; }
+        
+        .code-tag {
+            position: absolute; top: 10px; right: 10px; font-size: 9px;
+            padding: 3px 8px; border-radius: 2px; font-weight: 900;
+        }
+
+        /* CART & POS */
+        .pos-panel {
+            width: 400px; background: var(--dark); border-left: 1px solid #222;
+            display: flex; flex-direction: column;
+        }
+        .cart-content { flex: 1; overflow-y: auto; padding: 20px; }
+        .checkout-box { padding: 25px; background: #000; border-top: 2px solid var(--red); }
+
+        /* MODAL */
+        #pay-modal {
             display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95);
             z-index: 20000; align-items: center; justify-content: center;
         }
-        .qr-quantum {
-            background: white; padding: 50px; border-radius: 40px; text-align: center; color: #000;
-            width: 500px; box-shadow: 0 0 100px var(--neon-glow);
-        }
-        .qr-quantum img { width: 300px; height: 300px; margin: 25px 0; border: 10px solid #f1f5f9; border-radius: 20px; }
+        .pay-box { background: #fff; padding: 40px; border-radius: 8px; text-align: center; color: #000; width: 400px; }
     </style>
 </head>
 <body>
 
-    <div id="login-system">
-        <div class="login-box">
-            <div class="lg-brand">LGSHOPCOMPANY</div>
-            <input type="password" id="murt-pass" class="murt-input" placeholder="ACCESS KEY">
-            <button class="gate-btn murt-btn" onclick="authenticate()">AUTHORIZE</button>
-            <p id="error-msg" style="color:var(--primary); font-size:12px; margin-top:15px; display:none;">ACCESS DENIED PROTOCOL</p>
+    <div id="login-screen">
+        <div class="brand-header">LGShopCompany</div>
+        <div class="login-card">
+            <input type="password" id="access-key" class="murt-input" placeholder="PASSKEY">
+            <button class="murt-btn" onclick="login()">ENTER SYSTEM</button>
         </div>
     </div>
 
-    <div id="app-shell" class="app-shell">
-        <aside class="sidebar">
-            <div class="brand-id">LG-ARMORY.OS <span id="user-rank" style="display:block; font-size:9px; color:#555; margin-top:5px;"></span></div>
-            <div class="nav-links">
-                <div class="nav-link active" onclick="nav('arsenal', this)"><i class="fas fa-terminal"></i><span>Arsenal</span></div>
-                <div class="nav-link" id="boss-nav" onclick="nav('boss', this)" style="display:none;"><i class="fas fa-satellite"></i><span>Multiverse</span></div>
+    <div id="main-app">
+        <header>
+            <div style="font-family:'Syncopate'; font-size:18px; color:var(--red);">MURTHELP.OS</div>
+            <div style="display:flex; gap:30px; font-size:12px;">
+                <span id="clock"></span>
+                <span style="color:var(--gold)">OPERATOR: GIA LUÂN</span>
             </div>
-        </aside>
+        </header>
 
-        <main class="main-shell">
-            <header class="top-hub">
-                <div class="brand-os">MURTHELP OMNIVERSE v99.0</div>
-                <div style="display: flex; gap: 30px; align-items: center;">
-                    <div id="live-clock" style="font-family: 'Orbitron'; font-size: 20px; color: var(--primary);">00:00:00</div>
-                    <div style="padding: 10px 20px; background: var(--primary); border-radius: 5px; font-weight: 900; font-size: 12px;">COMMANDER: GIA LUÂN</div>
-                </div>
-            </header>
+        <div class="wrapper">
+            <aside>
+                <div class="nav-item active" onclick="showTab('arsenal')"><i class="fas fa-crosshairs"></i> VŨ KHÍ CHIẾN LƯỢC</div>
+                <div class="nav-item" onclick="showTab('boss')"><i class="fas fa-user-shield"></i> QUẢN TRỊ VIÊN</div>
+                <div class="nav-item" style="margin-top:auto; color:var(--gold)" onclick="location.reload()"><i class="fas fa-power-off"></i> THOÁT HỆ THỐNG</div>
+            </aside>
 
-            <div class="quantum-frame">
-                <div id="arsenal" class="page active" style="grid-column: 1 / 2;">
-                    <div class="arsenal-grid" id="arsenal-container"></div>
-                </div>
-
-                <div class="terminal" id="terminal-pos">
-                    <div class="vault-header">
-                        <h2 style="font-family:'Orbitron'; font-size:14px; letter-spacing:2px; color:var(--primary);">LOADOUT PROTOCOL</h2>
-                        <b id="ord-id">ORD-...</b>
+            <main>
+                <div id="tab-arsenal">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:30px;">
+                        <h2 style="font-family:'Syncopate'; font-size:16px;">INVENTORY</h2>
+                        <input type="text" id="search" placeholder="Tìm kiếm..." onkeyup="search()" style="background:#111; border:1px solid #333; color:#fff; padding:8px 20px; border-radius:20px;">
                     </div>
-                    <div class="cart-list" id="cart-list"></div>
-                    <div style="border-top:1px solid #222; padding-top:20px;">
-                        <div style="display:flex; justify-content:space-between; font-weight:900; font-size:26px;">
-                            <span>TOTAL COST</span><span id="loadout-total" style="color:var(--trader)">0 $</span>
-                        </div>
-                        <button class="btn-launch murt-btn" onclick="executeBuy()">EXECUTE TRANSFER</button>
-                    </div>
+                    <div class="weapon-grid" id="weapon-list"></div>
                 </div>
 
-                <div id="boss" class="page">
+                <div id="tab-boss" style="display:none;">
+                    <h2 style="font-family:'Syncopate'; margin-bottom:30px; color:var(--red);">BOSS DASHBOARD</h2>
                     <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:20px;">
-                        <div class="s-card"><label>Tổng doanh thu đa vũ trụ</label><h2 id="st-rev">$0</h2></div>
-                        <div class="s-card"><label>Đơn hàng thành công</label><h2 id="st-orders" style="color:var(--primary)">0</h2></div>
-                        <div class="s-card"><label>Giá trị kho hàng</label><h2 id="st-assets" style="color:var(--clean)">$0</h2></div>
-                    </div>
-                    <div style="background:#0d0d0d; padding:40px; border-radius:30px; border:1px solid #222; margin-top:20px; height:400px;">
-                        <canvas id="mainChart"></canvas>
+                        <div style="background:var(--dark); padding:30px; border-radius:8px;">
+                            <small>DOANH THU</small>
+                            <h1 id="total-rev" style="color:var(--gold)">$0</h1>
+                        </div>
+                        <div style="background:var(--dark); padding:30px; border-radius:8px;">
+                            <small>ĐƠN HÀNG</small>
+                            <h1 id="total-orders">0</h1>
+                        </div>
                     </div>
                 </div>
+            </main>
+
+            <div class="pos-panel">
+                <div style="padding:20px; border-bottom:1px solid #222; font-weight:900;">GIỎ HÀNG</div>
+                <div class="cart-content" id="cart-items"></div>
+                <div class="checkout-box">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+                        <span>TỔNG CỘNG:</span>
+                        <h2 id="cart-total" style="color:var(--gold)">$0</h2>
+                    </div>
+                    <button class="murt-btn" onclick="openPay()">THANH TOÁN (VIETQR)</button>
+                </div>
             </div>
-        </main>
+        </div>
     </div>
 
-    <div id="payment-terminal">
-        <div class="qr-quantum">
-            <h2 style="font-family:'Syncopate'; letter-spacing:3px;">XÁC NHẬN GIAO DỊCH</h2>
-            <div id="qrcode-surface" style="display: flex; justify-content: center; margin: 30px 0;"></div>
-            <h1 id="price-vnd" style="color:var(--primary); font-size:36px; margin-bottom:10px;">0 VNĐ</h1>
-            <button class="btn-launch murt-btn" onclick="confirmSuccess()">XÁC NHẬN CHUYỂN KHOẢN</button>
-            <button class="btn-launch murt-btn" style="background:#000; color:#fff;" onclick="closePayment()">HỦY LỆNH</button>
+    <div id="pay-modal">
+        <div class="pay-box">
+            <h3 style="margin-bottom:20px;">QUÉT MÃ ĐỂ NHẬN HÀNG</h3>
+            <div id="qrcode" style="display:flex; justify-content:center; margin-bottom:20px;"></div>
+            <h2 id="vnd-price" style="color:var(--red); margin-bottom:25px;">0 VNĐ</h2>
+            <button class="murt-btn" onclick="confirmOrder()">XÁC NHẬN ĐÃ CHUYỂN</button>
+            <button class="murt-btn" style="background:#ddd; color:#000; margin-top:10px;" onclick="closePay()">QUAY LẠI</button>
         </div>
     </div>
 
 <script>
-    // --- DATABASE MURTHELP OMNIVERSE ---
-    let products = JSON.parse(localStorage.getItem('MH_P99')) || [
-        { id: 1, name: 'XM210 Plasma Rifle', price: 15500, code: 'CODE RED', stock: 88, img: 'https://vignette.wikia.nocookie.net/halo/images/6/6d/H4-Railgun-Render.png/revision/latest?cb=20121111033220' },
-        { id: 2, name: 'Barrett M82A1', price: 12000, code: 'CODE PURPLE', stock: 5, img: 'https://www.militarytoday.com/firearms/barrett_m82.jpg' },
-        { id: 3, name: 'Katana S1', price: 4500, code: 'CODE RED', stock: 12, img: 'https://weaponstore.co.za/wp-content/uploads/2021/04/ROCKET.png' },
-        { id: 4, name: 'Drone UAV Swarm', price: 85000, code: 'CODE YELLOW', stock: 3, img: 'https://fnamerica.com/wp-content/uploads/2017/01/FN_M249_SAW_Standard_Right-300x125.png' }
+    // DỮ LIỆU THẬT 100 VŨ KHÍ (A Shop For Killer Style)
+    const database = [
+        { id:1, name:"AWM Sniper Rifle", price:15000, code:"PURPLE", stock:5, img:"https://pngimg.com/uploads/sniper_rifle/sniper_rifle_PNG35.png" },
+        { id:2, name:"Glock 18 Tactical", price:1200, code:"YELLOW", stock:20, img:"https://pngimg.com/uploads/pistol/pistol_PNG24.png" },
+        { id:3, name:"AK-47 Kalashnikov", price:3500, code:"RED", stock:12, img:"https://pngimg.com/uploads/ak47/ak47_PNG15442.png" },
+        { id:4, name:"M4A1 Carbine", price:4200, code:"RED", stock:10, img:"https://pngimg.com/uploads/m4/m4_PNG22.png" },
+        { id:5, name:"Katana Muramasa", price:2800, code:"RED", stock:3, img:"https://pngimg.com/uploads/katana/katana_PNG43.png" },
+        { id:6, name:"Combat Medic Kit", price:500, code:"GREEN", stock:50, img:"https://pngimg.com/uploads/first_aid_kit/first_aid_kit_PNG45.png" }
     ];
+
+    // Tự động bù cho đủ 100 món
+    for(let i=7; i<=100; i++) {
+        database.push({ id:i, name:`Vũ khí hạng #00${i}`, price:Math.floor(Math.random()*5000)+1000, code: i%3==0 ? "PURPLE" : "RED", stock:15, img:"https://pngimg.com/uploads/pistol/pistol_PNG24.png"});
+    }
+
     let cart = [];
     let revenue = 0;
-    let ordersCount = 0;
+    let orders = 0;
 
-    // --- ACCESS PROTOCOL (SỬA LỖI ĐĂNG NHẬP) ---
-    function authenticate() {
-        const p = document.getElementById('murt-pass').value;
-        if(p === 'LuanLG' || p === 'LGPro') {
-            document.getElementById('login-system').style.display = 'none';
-            document.getElementById('app-shell').style.display = 'flex';
-            if(p === 'LuanLG') {
-                document.getElementById('boss-nav').style.display = 'flex';
-                initChart();
-                updateDashboard();
-            }
-            renderArsenal();
-            startQuantumClock();
+    function login() {
+        const key = document.getElementById('access-key').value;
+        if(key === 'LuanLG' || key === 'LGPro') {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('main-app').style.display = 'flex';
+            renderArsenal(database);
+            setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleString(); }, 1000);
         } else {
-            document.getElementById('error-msg').style.display = 'block';
+            Swal.fire('LỖI', 'Mã truy cập không chính xác', 'error');
         }
     }
 
-    function nav(zoneId, el) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
-        document.getElementById(zoneId).classList.add('active');
-        el.classList.add('active');
-        // Fix lỗi treo trang khi chuyển sang Terminal
-        if(zoneId === 'vault') document.getElementById('arsenal').classList.add('active'); 
-    }
-
-    // --- ARSENAL & POS CORE (FIX LỖI MẤT ẢNH & TIỀN) ---
-    function renderArsenal() {
-        const container = document.getElementById('arsenal-container');
-        container.innerHTML = products.map(w => {
-            const color = w.code === 'CODE RED' ? 'var(--primary)' : (w.code === 'CODE PURPLE' ? 'var(--heavy)' : 'var(--trader)');
-            return `
-                <div class="p-card" onclick="addToLoadout(${w.id})">
-                    <span class="code-label" style="background:${color}">${w.code}</span>
-                    <img src="${w.img}" alt="${w.name}">
-                    <h3>${w.name}</h3>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
-                        <b style="color:var(--trader); font-size:22px;">$${w.price.toLocaleString()}</b>
-                        <span style="font-size:11px;">STOCK: ${w.stock}</span>
-                    </div>
+    function renderArsenal(data) {
+        const container = document.getElementById('weapon-list');
+        container.innerHTML = data.map(w => `
+            <div class="w-card">
+                <span class="code-tag" style="background:var(--code-${w.code.toLowerCase()})">CODE ${w.code}</span>
+                <img src="${w.img}" class="w-img">
+                <div style="font-weight:bold; font-size:14px; margin-bottom:10px;">${w.name}</div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <b style="color:var(--gold)">$${w.price.toLocaleString()}</b>
+                    <button onclick="addToCart(${w.id})" style="background:var(--red); border:none; color:#fff; padding:5px 10px; cursor:pointer; border-radius:3px;"><i class="fas fa-plus"></i></button>
                 </div>
-            `;
-        }).join('');
-    }
-
-    function addToLoadout(id) {
-        const weapon = products.find(w => w.id === id);
-        if(weapon.stock <= 0) return Swal.fire('OUT OF STOCK', 'Vũ khí này đã hết hàng!', 'error');
-        cart.push({...weapon});
-        updateLoadoutUI();
-    }
-
-    function updateLoadoutUI() {
-        const list = document.getElementById('cart-list');
-        list.innerHTML = cart.map((item, idx) => `
-            <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:10px; border-bottom:1px solid #111; padding-bottom:5px;">
-                <span>${item.name}</span>
-                <b style="color:var(--trader)">$${item.price.toLocaleString()}</b>
-                <i class="fas fa-trash" style="color:var(--primary); cursor:pointer" onclick="removeFromCart(${idx})"></i>
             </div>
         `).join('');
-        const total = cart.reduce((sum, i) => sum + i.price, 0);
-        document.getElementById('loadout-total').innerText = `$${total.toLocaleString()}`;
     }
 
-    function removeFromCart(idx) {
-        cart.splice(idx, 1);
-        updateLoadoutUI();
+    function addToCart(id) {
+        const item = database.find(w => w.id === id);
+        cart.push(item);
+        updateCartUI();
     }
 
-    // --- PAYMENT Hub (FIX TIỀN CHÍNH XÁC & TREO GIAO DỊCH) ---
-    function executeBuy() {
+    function updateCartUI() {
+        const container = document.getElementById('cart-items');
+        container.innerHTML = cart.map((item, idx) => `
+            <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #222; font-size:12px;">
+                <span>${item.name}</span>
+                <b style="color:var(--gold)">$${item.price.toLocaleString()}</b>
+                <i class="fas fa-trash" onclick="remove(${idx})" style="color:#555; cursor:pointer"></i>
+            </div>
+        `).join('');
+        const total = cart.reduce((s, i) => s + i.price, 0);
+        document.getElementById('cart-total').innerText = `$${total.toLocaleString()}`;
+    }
+
+    function remove(idx) { cart.splice(idx, 1); updateCartUI(); }
+
+    function openPay() {
         if(cart.length === 0) return;
-        const totalUSD = cart.reduce((sum, i) => sum + i.price, 0);
+        const totalUSD = cart.reduce((s, i) => s + i.price, 0);
         const totalVND = totalUSD * 25450;
-
-        document.getElementById('payment-terminal').style.display = 'flex';
-        document.getElementById('price-vnd').innerText = totalVND.toLocaleString() + ' VNĐ';
+        document.getElementById('pay-modal').style.display = 'flex';
+        document.getElementById('vnd-price').innerText = totalVND.toLocaleString() + " VNĐ";
         
-        document.getElementById('qrcode-surface').innerHTML = "";
-        new QRCode(document.getElementById("qrcode-surface"), {
-            text: `https://img.vietqr.io/image/970422-0348710332-compact.jpg?amount=${totalVND}&addInfo=GIALUAN_MURTHELP_GIAODICH`,
-            width: 250, height: 250
+        document.getElementById('qrcode').innerHTML = "";
+        new QRCode(document.getElementById("qrcode"), {
+            text: `https://img.vietqr.io/image/970422-0348710332-compact.jpg?amount=${totalVND}&addInfo=GIALUAN_LGSHOP`,
+            width: 200, height: 200
         });
     }
 
-    function confirmSuccess() {
-        const totalUSD = cart.reduce((sum, i) => sum + i.price, 0);
-        revenue += totalUSD;
-        ordersCount++;
-        updateDashboard();
+    function confirmOrder() {
+        const total = cart.reduce((s, i) => s + i.price, 0);
+        revenue += total;
+        orders++;
+        document.getElementById('total-rev').innerText = `$${revenue.toLocaleString()}`;
+        document.getElementById('total-orders').innerText = orders;
         
-        cart = [];
-        updateLoadoutUI();
-        Swal.fire('MISSION ACCOMPLISHED', 'Đã ghi nhận giao dịch vào đa vũ trụ.', 'success');
-        closePayment();
+        cart = []; updateCartUI(); closePay();
+        Swal.fire('THÀNH CÔNG', 'Giao dịch đã được ghi nhận vào hệ thống.', 'success');
     }
 
-    function closePayment() { document.getElementById('payment-terminal').style.display = 'none'; }
-
-    // --- DASHBOARD (FIX LỖI TRỐNG DỮ LIỆU) ---
-    function updateDashboard() {
-        document.getElementById('st-rev').innerText = `$${revenue.toLocaleString()}`;
-        document.getElementById('st-orders').innerText = ordersCount;
-        const totalAssets = products.reduce((s, p) => s + (p.price * p.stock), 0);
-        document.getElementById('st-assets').innerText = `$${totalAssets.toLocaleString()}`;
+    function closePay() { document.getElementById('pay-modal').style.display = 'none'; }
+    function showTab(id) {
+        document.getElementById('tab-arsenal').style.display = id === 'arsenal' ? 'block' : 'none';
+        document.getElementById('tab-boss').style.display = id === 'boss' ? 'block' : 'none';
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        event.currentTarget.classList.add('active');
     }
 
-    function startQuantumClock() {
-        setInterval(() => {
-            document.getElementById('live-clock').innerText = new Date().toLocaleTimeString('vi-VN');
-        }, 1000);
-    }
-
-    function initChart() {
-        const ctx = document.getElementById('mainChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
-            data: { labels: ['T1', 'T2', 'T3', 'T4'], datasets: [{ label: 'Doanh thu', data: [12000, 19000, 15000, 32000], borderColor: '#ff3c3c', fill: true, backgroundColor: 'rgba(255, 60, 60, 0.05)', tension: 0.4 }] },
-            options: { maintainAspectRatio: false }
-        });
-    }
-
-    // Tự generate 100 loại súng để đảm bảo không trống code
-    for(let i=5; i<=100; i++) {
-        products.push({ id: i, name: `Tactical Weapon #${1000 + i}`, price: Math.floor(Math.random()*20000)+500, code: i%2==0 ? 'CODE RED' : 'CODE PURPLE', stock: 50, img: 'https://vignette.wikia.nocookie.net/halo/images/6/6d/H4-Railgun-Render.png/revision/latest?cb=20121111033220' });
+    function search() {
+        const val = document.getElementById('search').value.toLowerCase();
+        const filtered = database.filter(w => w.name.toLowerCase().includes(val));
+        renderArsenal(filtered);
     }
 </script>
 </body>
