@@ -2,398 +2,236 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MURTHELP OMNIVERSE v25.0 | SUPREME COMMAND</title>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LGSHOPCOMPANY | MURTHELP OS</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Orbitron:wght@400;900&family=JetBrains+Mono:wght@300;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Orbitron:wght@400;900&family=JetBrains+Mono:wght@500;800&display=swap" rel="stylesheet">
 
     <style>
-        :root {
-            --primary: #ff3c3c; /* Red Code */
-            --heavy: #a855f7;   /* Purple Code */
-            --trader: #facc15;  /* Yellow Code */
-            --clean: #22c55e;   /* Green Code */
-            --void: #050505;
-            --panel: rgba(10, 10, 10, 0.95);
-            --glass: rgba(255, 255, 255, 0.03);
-            --neon-glow: 0 0 15px rgba(255, 60, 60, 0.4);
-        }
+        :root { --red: #ff3c3c; --gold: #facc15; --black: #050505; --gray: #111; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--black); color: #fff; font-family: 'JetBrains Mono', monospace; height: 100vh; overflow: hidden; }
 
-        /* RESET & SCROLLBAR */
-        * { margin: 0; padding: 0; box-sizing: border-box; cursor: crosshair; }
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+        /* LOGIN SCREEN - ĐẸP & ĐỐI XỨNG TUYỆT ĐỐI */
+        #login-gate { position: fixed; inset: 0; background: #000; z-index: 99999; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+        .brand-logo { font-family: 'Syncopate'; font-size: 35px; letter-spacing: -1px; color: #fff; margin-bottom: 40px; text-transform: uppercase; border-bottom: 4px solid var(--red); padding-bottom: 5px; }
+        .login-box { width: 350px; text-align: center; }
+        .murt-input { width: 100%; padding: 18px; background: #0a0a0a; border: 1px solid #222; color: var(--gold); font-size: 20px; text-align: center; margin-bottom: 20px; outline: none; border-radius: 4px; }
+        .murt-btn { width: 100%; padding: 18px; background: var(--red); border: none; color: #fff; font-weight: 900; cursor: pointer; text-transform: uppercase; font-family: 'Orbitron'; }
 
-        body {
-            background-color: var(--void);
-            color: #fff;
-            font-family: 'JetBrains Mono', monospace;
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-        }
-
-        /* SECURITY GATE PROTOCOL */
-        #security-gate {
-            position: fixed; inset: 0; background: #000; z-index: 100000;
-            display: flex; align-items: center; justify-content: center;
-            flex-direction: column;
-        }
-        .login-box {
-            width: 400px; padding: 50px; border: 1px solid rgba(255,60,60,0.2);
-            background: #0a0a0a; backdrop-filter: blur(10px); text-align: center; border-radius: 20px;
-        }
-        .login-box h1 { font-family: 'Syncopate', sans-serif; font-size: 24px; color: var(--primary); letter-spacing: 5px; margin-bottom: 40px; }
-        .murt-input {
-            width: 100%; padding: 15px; background: #111; border: 1px solid #444; color: #fff;
-            font-family: inherit; font-size: 18px; text-align: center; outline: none; margin-bottom: 25px; border-radius: 10px;
-        }
-        .murt-btn {
-            width: 100%; padding: 15px; background: var(--primary); color: white; border: none;
-            font-weight: 900; cursor: pointer; transition: 0.3s; border-radius: 10px;
-        }
-        .murt-btn:hover { background: #ff5e5e; box-shadow: var(--neon-glow); }
-
-        /* OMNIVERSE Hub */
-        .app-shell { flex: 1; display: none; flex-direction: column; position: relative; }
+        /* APP LAYOUT */
+        #app { display: none; height: 100vh; grid-template-columns: 260px 1fr 380px; }
         
-        /* COMMAND SIDEBAR */
-        .sidebar {
-            width: 110px;
-            background: rgba(10, 10, 15, 0.9);
-            border-right: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex; flex-direction: column; align-items: center; padding: 40px 0; gap: 30px;
-            z-index: 1000; backdrop-filter: blur(20px);
-        }
-        .nav-link {
-            width: 70px; height: 70px; border-radius: 18px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            color: #444; cursor: pointer; transition: 0.3s cubic-bezier(0.23, 1, 0.32, 1); gap: 5px;
-            border: 1px solid transparent; background: var(--glass);
-        }
-        .nav-link:hover, .nav-link.active {
-            color: var(--primary); border-color: var(--primary);
-            background: rgba(255, 60, 60, 0.05); box-shadow: var(--neon-glow);
-        }
-        .nav-link i { font-size: 24px; }
-        .nav-link span { font-size: 9px; font-weight: 800; text-transform: uppercase; }
+        /* SIDEBAR */
+        aside { background: #080808; border-right: 1px solid #1a1a1a; display: flex; flex-direction: column; }
+        .nav-item { padding: 25px; border-bottom: 1px solid #111; cursor: pointer; display: flex; align-items: center; gap: 15px; font-size: 13px; font-weight: 800; }
+        .nav-item:hover, .nav-item.active { background: #111; color: var(--red); border-left: 4px solid var(--red); }
 
-        .top-hub {
-            height: 90px; background: rgba(5, 5, 5, 0.7);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex; justify-content: space-between; align-items: center; padding: 0 40px;
-        }
-        .brand-os { font-family: 'Syncopate', sans-serif; font-size: 20px; color: var(--primary); letter-spacing: 5px; text-shadow: var(--neon-glow); }
+        /* MAIN AREA */
+        main { overflow-y: auto; padding: 30px; background: radial-gradient(circle at top right, #0a0a0a, #050505); }
+        .weapon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+        .w-card { background: #0d0d0d; border: 1px solid #222; padding: 15px; border-radius: 8px; position: relative; transition: 0.3s; }
+        .w-card:hover { border-color: var(--red); transform: translateY(-5px); }
+        .w-img { width: 100%; height: 140px; object-fit: contain; margin-bottom: 15px; background: #000; padding: 10px; border-radius: 5px; }
+        .w-cat { font-size: 10px; color: #555; text-transform: uppercase; }
+        .w-name { font-weight: 800; font-size: 13px; margin: 5px 0; height: 35px; overflow: hidden; }
 
-        .quantum-frame { flex: 1; padding: 30px; overflow-y: auto; perspective: 1000px; display: grid; grid-template-columns: 1fr 450px; gap: 30px; }
-        .page { display: none; grid-column: 1 / 3; animation: slideIn 0.8s cubic-bezier(0.23, 1, 0.32, 1); }
-        .page.active { display: block; }
-        @keyframes slideIn { from { opacity: 0; transform: scale(1.1) rotateX(10deg); filter: blur(20px); } to { opacity: 1; transform: scale(1) rotateX(0); filter: blur(0); } }
+        /* POS / CART */
+        .pos-panel { background: #080808; border-left: 1px solid #1a1a1a; display: flex; flex-direction: column; }
+        .cart-header { padding: 25px; font-family: 'Syncopate'; font-size: 14px; color: var(--red); border-bottom: 1px solid #1a1a1a; }
+        .cart-items { flex: 1; overflow-y: auto; padding: 20px; }
+        .cart-item { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 12px; border-bottom: 1px solid #111; padding-bottom: 10px; }
+        .total-box { padding: 30px; background: #000; border-top: 2px solid var(--red); }
 
-        /* ARSENAL GRID - FIX LỖI MẤT ẢNH */
-        .arsenal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .p-card {
-            background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 20px; padding: 25px; text-align: center; cursor: pointer;
-            transition: 0.3s; position: relative; overflow: hidden;
-        }
-        .p-card:hover { border-color: var(--primary); transform: translateY(-8px); box-shadow: 0 10px 30px rgba(255, 60, 60, 0.2); }
-        .p-card img { width: 100%; height: 160px; object-fit: contain; margin-bottom: 20px; transition: 0.3s; filter: grayscale(0.5); }
-        .p-card:hover img { filter: grayscale(0); transform: scale(1.05); }
-        .p-card .code-label { position: absolute; top: 15px; right: 15px; font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 10px; }
+        /* VIP SECTION */
+        .vip-card { background: #0d0d0d; border: 1px solid #222; padding: 20px; border-radius: 10px; margin-bottom: 15px; display: flex; align-items: center; gap: 20px; }
+        .vip-avatar { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--gold); }
 
-        /* POS TERMINAL (FIX DOANH THU & TIỀN) */
-        .terminal {
-            background: #0a0a0a;
-            border: 2px solid var(--primary);
-            border-radius: 25px;
-            padding: 30px;
-            display: flex; flex-direction: column;
-            box-shadow: 0 0 50px rgba(255, 60, 60, 0.1);
-            height: fit-content;
-            position: sticky; top: 0;
-        }
-        .cart-list { flex: 1; overflow-y: auto; margin: 20px 0; border-top: 1px solid #222; }
-        .btn-launch { width: 100%; padding: 22px; border-radius: 20px; border: none; background: var(--primary); color: white; font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: 0.3s; margin-top: 20px; box-shadow: var(--neon-glow); }
-        .btn-launch:hover { background: #ff5e5e; transform: translateY(-3px); }
-
-        /* BOSS DASHBOARD (SỬA LỖI TRỐNG DỮ LIỆU) */
-        .s-card { background: #0d0d0d; padding: 25px; border: 1px solid #222; border-radius: 20px; }
-        .s-card label { color: #666; font-size: 11px; font-weight: 700; text-transform: uppercase; }
-        .s-card h2 { font-size: 32px; font-weight: 900; margin-top: 5px; color: white; }
-
-        /* PAYMENT TERMINAL */
-        #payment-terminal {
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95);
-            z-index: 20000; align-items: center; justify-content: center;
-        }
-        .qr-quantum {
-            background: white; padding: 50px; border-radius: 40px; text-align: center; color: #000;
-            width: 500px; box-shadow: 0 0 100px var(--neon-glow);
-        }
-        .qr-quantum img { width: 300px; height: 300px; margin: 25px 0; border: 10px solid #f1f5f9; border-radius: 20px; }
+        /* MODAL */
+        #pay-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 10000; align-items: center; justify-content: center; }
+        .pay-box { background: #fff; padding: 40px; border-radius: 10px; text-align: center; color: #000; width: 420px; }
     </style>
 </head>
 <body>
 
-    <div id="security-gate">
-        <div class="gate-box">
-            <h1>MURTHELP</h1>
-            <input type="password" id="murt-pass" class="murt-input" placeholder="ACCESS KEY">
-            <button class="gate-btn murt-btn" onclick="authenticate()">ACCESS OMNIVERSE</button>
-            <p id="error-msg" style="color:var(--primary); font-size:12px; margin-top:15px; display:none;">ACCESS DENIED PROTOCOL</p>
+    <div id="login-gate">
+        <div class="brand-logo">LGShopCompany</div>
+        <div class="login-box">
+            <input type="password" id="pass" class="murt-input" placeholder="ENTER ACCESS KEY">
+            <button class="murt-btn" onclick="login()">INITIALIZE ACCESS</button>
         </div>
     </div>
 
-    <div id="app-shell" class="app-shell">
-        <aside class="sidebar">
-            <div class="brand-id">MURTHELP.SYS <span id="user-rank" style="display:block; font-size:9px; color:#555; margin-top:5px;"></span></div>
-            <div class="nav-links">
-                <div class="nav-link active" onclick="nav('arsenal', this)"><i class="fas fa-terminal"></i><span>Arsenal</span></div>
-                <div class="nav-link" onclick="nav('vips', this)"><i class="fas fa-user-secret"></i><span>Warlords</span></div>
-                <div class="nav-link" id="boss-nav" onclick="nav('boss', this)" style="display:none; border-color:var(--trader); color:var(--trader);"><i class="fas fa-crown"></i><span>Boss Control</span></div>
-            </div>
+    <div id="app">
+        <aside>
+            <div style="padding: 30px; font-family: 'Syncopate'; color: var(--red);">MURTHELP.OS</div>
+            <div class="nav-item active" onclick="showTab('arsenal')"><i class="fas fa-gun"></i> KHO VŨ KHÍ</div>
+            <div class="nav-item" onclick="showTab('vips')"><i class="fas fa-user-secret"></i> DANH SÁCH SÁT THỦ</div>
+            <div class="nav-item" onclick="showTab('boss')"><i class="fas fa-shield-halved"></i> QUẢN LÝ ĐẾ CHẾ</div>
+            <div class="nav-item" style="margin-top:auto; color:#444" onclick="location.reload()"><i class="fas fa-power-off"></i> LOGOUT</div>
         </aside>
 
-        <main class="main-shell">
-            <header class="top-hub">
-                <div class="brand-os">MURTHELP OMNIVERSE v25.0</div>
-                <div style="display: flex; gap: 30px; align-items: center;">
-                    <div id="quantum-clock" style="font-family: 'Orbitron'; font-size: 20px; color: var(--primary);">00:00:00</div>
-                    <div style="padding: 10px 20px; background: var(--primary); border-radius: 5px; font-weight: 900; font-size: 12px;" id="operator-tag">COMMANDER: GIA LUÂN</div>
-                </div>
-            </header>
+        <main>
+            <div id="tab-arsenal">
+                <h2 style="font-family:'Syncopate'; margin-bottom:30px; font-size:18px; color:var(--gold)">PREMIUM ARSENAL</h2>
+                <div class="weapon-grid" id="w-list"></div>
+            </div>
 
-            <div class="quantum-frame">
-                <div id="arsenal" class="page active" style="grid-column: 1 / 2;">
-                    <div class="arsenal-grid" id="arsenal-container"></div>
-                </div>
+            <div id="tab-vips" style="display:none;">
+                <h2 style="font-family:'Syncopate'; margin-bottom:30px; font-size:18px; color:var(--red)">THE CONTINENTAL MEMBERS</h2>
+                <div id="vip-list"></div>
+            </div>
 
-                <div class="terminal" id="terminal-pos">
-                    <div style="padding-bottom:15px; border-bottom:1px solid #222; display:flex; justify-content:space-between;">
-                        <h2 style="font-family:'Orbitron'; font-size:14px; letter-spacing:2px; color:var(--primary);">LOADOUT PROTOCOL</h2>
-                        <b id="ord-id">ORD-...</b>
+            <div id="tab-boss" style="display:none;">
+                <h2 style="font-family:'Syncopate'; margin-bottom:30px; font-size:18px; color:var(--red)">EMPIRE CONTROL</h2>
+                <div style="grid-template-columns: 1fr 1fr; display:grid; gap:20px;">
+                    <div style="background:#0d0d0d; padding:30px; border-radius:10px; border-left:5px solid var(--gold);">
+                        <small>DOANH THU ĐA VŨ TRỤ</small>
+                        <h1 id="rev" style="font-size:40px; margin-top:10px;">$0</h1>
                     </div>
-                    <div class="cart-list" id="cart-data"></div>
-                    <div style="border-top:1px solid #222; padding-top:20px;">
-                        <div style="display:flex; justify-content:space-between; font-weight:900; font-size:26px;">
-                            <span>TOTAL COST</span><span id="loadout-total" style="color:var(--trader)">0 $</span>
-                        </div>
-                        <button class="btn-launch murt-btn" onclick="launchMultiverseTransfer()">EXECUTE TRANSFER</button>
+                    <div style="background:#0d0d0d; padding:30px; border-radius:10px; border-left:5px solid var(--red);">
+                        <small>LỆNH TRUY SÁT ĐÃ HOÀN THÀNH</small>
+                        <h1 id="orders" style="font-size:40px; margin-top:10px;">0</h1>
                     </div>
-                </div>
-
-                <div id="boss" class="page">
-                    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:20px;">
-                        <div class="s-card"><label>Tổng doanh thu đa vũ trụ</label><h2 id="st-rev">$0</h2></div>
-                        <div class="s-card"><label>Đơn hàng thành công</label><h2 id="st-orders" style="color:var(--primary)">0</h2></div>
-                        <div class="s-card"><label>Giá trị kho hàng</label><h2 id="st-assets" style="color:var(--clean)">$0</h2></div>
-                    </div>
-                    <div style="background:#0d0d0d; padding:40px; border-radius:30px; border:1px solid #222; margin-top:20px; height:400px;">
-                        <canvas id="mainChart"></canvas>
-                    </div>
-                </div>
-
-                <div id="vips" class="page">
-                    <h1 style="font-family:'Orbitron'; margin-bottom:30px; color:var(--trader);">VIP CHIẾN THẦN (WARLORDS)</h1>
-                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:25px;" id="vip-list"></div>
                 </div>
             </div>
         </main>
+
+        <div class="pos-panel">
+            <div class="cart-header">CURRENT LOADOUT</div>
+            <div class="cart-items" id="cart-data"></div>
+            <div class="total-box">
+                <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+                    <span style="color:#555">SUBTOTAL:</span>
+                    <h2 id="total-val" style="color:var(--gold)">$0</h2>
+                </div>
+                <button class="murt-btn" onclick="pay()">EXECUTE TRANSACTION</button>
+            </div>
+        </div>
     </div>
 
-    <div id="payment-terminal">
-        <div class="qr-quantum">
-            <h2 style="font-family:'Syncopate'; letter-spacing:3px;">XÁC NHẬN GIAO DỊCH</h2>
-            <div id="qrcode-surface" style="display: flex; justify-content: center; margin: 30px 0;"></div>
-            <h1 id="price-vnd" style="color:var(--primary); font-size:36px; margin-bottom:10px;">0 VNĐ</h1>
-            <button class="btn-launch murt-btn" onclick="finalizeMultiverseTransfer()">XÁC NHẬN CHUYỂN KHOẢN</button>
-            <button class="btn-launch murt-btn" style="background:#000; color:#fff;" onclick="abortProtocol()">HỦY LỆNH</button>
+    <div id="pay-modal">
+        <div class="pay-box">
+            <h3 style="margin-bottom:20px; font-family:'Syncopate'">PAYMENT ENCRYPTED</h3>
+            <div id="qrcode" style="display:flex; justify-content:center; margin-bottom:20px;"></div>
+            <h2 id="vnd" style="color:var(--red); margin-bottom:30px;">0 VNĐ</h2>
+            <button class="murt-btn" onclick="done()">CONFIRM SUCCESS</button>
+            <button class="murt-btn" style="background:#eee; color:#000; margin-top:10px;" onclick="closePay()">CANCEL</button>
         </div>
     </div>
 
 <script>
-    // --- DATABASE MURTHELP OMNIVERSE ---
-    let products = JSON.parse(localStorage.getItem('MH_P25')) || [
-        { id: 1, name: 'XM210 Plasma Rifle', price: 15500, code: 'CODE RED', stock: 88, img: 'https://vignette.wikia.nocookie.net/halo/images/6/6d/H4-Railgun-Render.png/revision/latest?cb=20121111033220' },
-        { id: 2, name: 'Barrett M82A1', price: 12000, code: 'CODE PURPLE', stock: 5, img: 'https://www.militarytoday.com/firearms/barrett_m82.jpg' },
-        { id: 3, name: 'Katana S1', price: 4500, code: 'CODE RED', stock: 12, img: 'https://cdn.shopify.com/s/files/1/1440/1388/products/Katana_300x.png' },
-        { id: 4, name: 'Drone UAV Swarm', price: 85000, code: 'CODE YELLOW', stock: 3, img: 'https://dronelife.com/wp-content/uploads/2021/10/DJI-Swarm-UAV-300x169.jpeg' },
-        { id: 5, name: 'Glock 19 Gen 5', price: 1350, code: 'CODE YELLOW', stock: 100, img: 'https://www.glock.at/~/media/Images/Glock/Glock_17_Gen5_9x19_300px.png' }
+    // DỮ LIỆU VŨ KHÍ THẬT 100% CÓ ẢNH
+    const weapons = [
+        { id:1, cat:"Sniper Rifle", name:"Barrett M82A1 .50 BMG", price:18500, img:"https://www.militarytoday.com/firearms/barrett_m82.jpg" },
+        { id:2, cat:"Assault Rifle", name:"Heckler & Koch HK416", price:4500, img:"https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/HK416_noBG.png/640px-HK416_noBG.png" },
+        { id:3, cat:"Pistol", name:"Glock 17 John Wick Ed.", price:1200, img:"https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Glock_17_noBG.png/640px-Glock_17_noBG.png" },
+        { id:4, cat:"SMG", name:"FN P90 Tactical", price:3200, img:"https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/P90_noBG.png/640px-P90_noBG.png" },
+        { id:5, cat:"Shotgun", name:"Benelli M4 Super 90", price:2800, img:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Benelli_M4_noBG.png/640px-Benelli_M4_noBG.png" },
+        { id:6, cat:"Cold Weapon", name:"Handmade Katana S1", price:5500, img:"https://pngimg.com/uploads/katana/katana_PNG43.png" }
     ];
+
+    // Tự lấp đầy 100 món bằng thuật toán để tránh trống ảnh
+    for(let i=7; i<=100; i++) {
+        weapons.push({ id:i, cat:"Tactical Gear", name:`Combat Equipment #${100+i}`, price:Math.floor(Math.random()*8000)+1000, img:"https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Pistol_silencer.png/640px-Pistol_silencer.png" });
+    }
+
+    const assassins = [
+        { name: "John Wick", rank: "High Table", bio: "Hạng Đỏ - Cận chiến và súng ngắn chuyên nghiệp.", avatar: "https://vignette.wikia.nocookie.net/john-wick/images/2/2f/John_Wick_Chapter_2.jpg" },
+        { name: "Vincenzo Cassano", rank: "Consigliere", bio: "Hạng Tím - Vũ khí hạng nặng và phá hoại.", avatar: "https://upload.wikimedia.org/wikipedia/vi/0/05/Vincenzo_poster.jpg" },
+        { name: "Jeong Jin-man", rank: "Owner", bio: "Hạng Vàng - Cung ứng khí tài đa vũ trụ.", avatar: "https://upload.wikimedia.org/wikipedia/en/3/36/A_Shop_for_Killers_poster.jpg" }
+    ];
+
     let cart = [];
-    let orders = JSON.parse(localStorage.getItem('MH_O25')) || [];
-    let isAdmin = false;
+    let totalRev = 0;
+    let totalOrders = 0;
 
-    // --- ACCESS PROTOCOL (SỬA LỖI ĐĂNG NHẬP) ---
-    function authenticate() {
-        const p = document.getElementById('murt-pass').value;
-        if(p === 'LuanLG' || p === 'LGPro') {
-            isAdmin = (p === 'LuanLG');
-            document.getElementById('security-gate').style.display = 'none';
-            document.getElementById('app-shell').style.display = 'flex';
-            if(isAdmin) {
-                document.getElementById('boss-nav').style.display = 'flex';
-                initChart();
-                updateDashboardStats();
-            }
-            renderArsenal();
-            renderVIPs(); // Sửa lỗi trống VIP
-            startQuantumClock();
+    function login() {
+        if(document.getElementById('pass').value === 'LuanLG' || document.getElementById('pass').value === 'LGPro') {
+            document.getElementById('login-gate').style.display = 'none';
+            document.getElementById('app').style.display = 'grid';
+            renderWeapons();
+            renderVIPs();
         } else {
-            document.getElementById('error-msg').style.display = 'block';
+            Swal.fire('TRUY CẬP BỊ TỪ CHỐI', 'Sai mã bảo mật!', 'error');
         }
     }
 
-    function nav(zoneId, el) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
-        document.getElementById(zoneId).classList.add('active');
-        el.classList.add('active');
-        // Fix lỗi treo trang khi chuyển sang Terminal
-        if(zoneId === 'vault') document.getElementById('arsenal').classList.add('active'); 
-    }
-
-    // --- ARSENAL & POS CORE (FIX LỖI MẤT ẢNH & TIỀN) ---
-    function renderArsenal() {
-        const container = document.getElementById('arsenal-container');
-        container.innerHTML = products.map(w => {
-            const color = w.code === 'CODE RED' ? 'var(--primary)' : (w.code === 'CODE PURPLE' ? 'var(--heavy)' : 'var(--trader)');
-            return `
-                <div class="p-card" onclick="addToLoadout(${w.id})">
-                    <span class="code-label" style="background:${color}">${w.code}</span>
-                    <img src="${w.img}" alt="${w.name}">
-                    <h3>${w.name}</h3>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
-                        <b style="color:var(--trader); font-size:22px;">$${w.price.toLocaleString()}</b>
-                        <span style="font-size:11px;">STOCK: ${w.stock}</span>
-                    </div>
+    function renderWeapons() {
+        document.getElementById('w-list').innerHTML = weapons.map(w => `
+            <div class="w-card">
+                <img src="${w.img}" class="w-img" onerror="this.src='https://via.placeholder.com/200/000/ff3c3c?text=GEAR'">
+                <div class="w-cat">${w.cat}</div>
+                <div class="w-name">${w.name}</div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+                    <b style="color:var(--gold)">$${w.price.toLocaleString()}</b>
+                    <button onclick="add(${w.id})" style="background:var(--red); border:none; color:white; width:35px; height:35px; border-radius:5px; cursor:pointer"><i class="fas fa-plus"></i></button>
                 </div>
-            `;
-        }).join('');
-    }
-
-    function addToLoadout(id) {
-        const weapon = products.find(w => w.id === id);
-        if(weapon.stock <= 0) return Swal.fire('OUT OF STOCK', 'Vũ khí này đã hết hàng!', 'error');
-        cart.push({...weapon});
-        updateLoadoutUI();
-        weapon.stock--;
-        renderArsenal();
-    }
-
-    function updateLoadoutUI() {
-        const list = document.getElementById('cart-data');
-        if(cart.length === 0) {
-            list.innerHTML = '<p style="text-align:center; padding:50px; color:#444;">LOADOUT EMPTY</p>';
-        } else {
-            list.innerHTML = cart.map((item, idx) => `
-                <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:10px; border-bottom:1px solid #111; padding-bottom:5px;">
-                    <span>${item.name}</span>
-                    <b style="color:var(--trader)">$${item.price.toLocaleString()}</b>
-                    <i class="fas fa-trash" style="color:var(--primary); cursor:pointer" onclick="removeFromLoadout(${idx})"></i>
-                </div>
-            `).join('');
-        }
-        const total = cart.reduce((sum, i) => sum + i.price, 0);
-        document.getElementById('loadout-total').innerText = `$${total.toLocaleString()}`;
-    }
-
-    function removeFromLoadout(idx) {
-        const weapon = products.find(w => w.id === cart[idx].id);
-        weapon.stock++;
-        cart.splice(idx, 1);
-        updateLoadoutUI();
-        renderArsenal();
-    }
-
-    // --- PAYMENT Hub (FIX TIỀN CHÍNH XÁC & TREO GIAO DỊCH) ---
-    function launchMultiverseTransfer() {
-        if(cart.length === 0) return Swal.fire('LOADOUT EMPTY', 'Hãy chọn ít nhất 1 loại khí tài!', 'warning');
-        const totalUSD = cart.reduce((sum, i) => sum + i.price, 0);
-        const totalVND = totalUSD * 25450;
-
-        document.getElementById('payment-terminal').style.display = 'flex';
-        document.getElementById('price-vnd').innerText = totalVND.toLocaleString() + ' VNĐ';
-        
-        document.getElementById('qrcode-surface').innerHTML = "";
-        new QRCode(document.getElementById("qrcode-surface"), {
-            text: `https://img.vietqr.io/image/970422-0348710332-compact.jpg?amount=${totalVND}&addInfo=GIALUAN_MURTHELP_GIAODICH`,
-            width: 250, height: 250
-        });
-    }
-
-    function finalizeMultiverseTransfer() {
-        const totalUSD = cart.reduce((sum, i) => sum + i.price, 0);
-        orders.push({ id: Date.now(), total: totalUSD });
-        
-        localStorage.setItem('MH_O25', JSON.stringify(orders));
-        localStorage.setItem('MH_P25', JSON.stringify(products));
-
-        Swal.fire({
-            title: 'MISSION SUCCESS',
-            text: 'Tài nguyên đã được chuyển đến điểm hẹn. Đừng để lại dấu vết.',
-            icon: 'success',
-            background: '#020205', color: '#fff'
-        });
-
-        cart = [];
-        updateLoadoutUI();
-        updateDashboardStats();
-        abortProtocol(); // Đóng Modal mượt mà
-    }
-
-    function abortProtocol() { document.getElementById('payment-terminal').style.display = 'none'; }
-
-    // --- DATA & LOGISTICS RENDER (FIX LỖI TRỐNG DỮ LIỆU) ---
-    function renderVIPs() {
-        const vips = [
-            { name: 'Gia Luân', rank: 'GOD-RANK', points: 999999, avatar: '👑', color: 'var(--primary)' },
-            { name: 'X-Phantom', rank: 'ELITE ASSASSIN', points: 154000, avatar: '👤', color: 'var(--trader)' },
-            { name: 'Baba Yaga', rank: 'WARLORD', points: 88000, avatar: '💀', color: '#fff' }
-        ];
-        const target = document.getElementById('vip-list');
-        target.innerHTML = vips.map(v => `
-            <div style="background:#0d0d0d; padding:30px; border-radius:20px; border:1px solid ${v.color}; text-align:center;">
-                <div style="font-size:50px; margin-bottom:15px;">${v.avatar}</div>
-                <h2 style="color:${v.color}">${v.name}</h2>
-                <p style="font-size:12px; color:#555; margin-top:5px;">RANK: ${v.rank}</p>
-                <div style="margin-top:20px; font-weight:800; font-size:24px;">${v.points.toLocaleString()} PTS</div>
             </div>
         `).join('');
     }
 
-    function updateDashboardStats() {
-        if(!isAdmin) return;
-        const rev = orders.reduce((s, o) => s + o.total, 0);
-        document.getElementById('st-rev').innerText = `$${rev.toLocaleString()}`;
-        document.getElementById('st-orders').innerText = orders.length;
-        const totalAssets = products.reduce((s, p) => s + (p.price * p.stock), 0);
-        document.getElementById('st-assets').innerText = `$${totalAssets.toLocaleString()}`;
+    function renderVIPs() {
+        document.getElementById('vip-list').innerHTML = assassins.map(v => `
+            <div class="vip-card">
+                <img src="${v.avatar}" class="vip-avatar" onerror="this.src='https://via.placeholder.com/60'">
+                <div>
+                    <h4 style="color:var(--gold)">${v.name} - <small style="color:#fff">${v.rank}</small></h4>
+                    <p style="font-size:12px; color:#666; margin-top:5px;">${v.bio}</p>
+                </div>
+            </div>
+        `).join('');
     }
 
-    function startQuantumClock() {
-        setInterval(() => {
-            document.getElementById('live-clock').innerText = new Date().toLocaleTimeString('vi-VN');
-        }, 1000);
+    function add(id) {
+        cart.push(weapons.find(w => w.id === id));
+        updateCart();
     }
 
-    function initChart() {
-        const ctx = document.getElementById('mainChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
-            data: { labels: ['Tuần 1', 'Tuần 2', 'Tuần 3', 'Tuần 4'], datasets: [{ label: 'Doanh thu', data: [12000, 19000, 15000, 25000], borderColor: '#ff3c3c', fill: false, tension: 0.4 }] },
-            options: { maintainAspectRatio: false, scales: { y: { grid: { color: '#222' } }, x: { grid: { display: false } } } }
+    function updateCart() {
+        document.getElementById('cart-data').innerHTML = cart.map((i, idx) => `
+            <div class="cart-item">
+                <span>${i.name}</span>
+                <b>$${i.price.toLocaleString()} <i class="fas fa-times" onclick="remove(${idx})" style="margin-left:10px; cursor:pointer; color:#333"></i></b>
+            </div>
+        `).join('');
+        const total = cart.reduce((s, i) => s + i.price, 0);
+        document.getElementById('total-val').innerText = `$${total.toLocaleString()}`;
+    }
+
+    function remove(idx) { cart.splice(idx,1); updateCart(); }
+
+    function pay() {
+        if(cart.length === 0) return;
+        const total = cart.reduce((s, i) => s + i.price, 0);
+        const vnd = total * 25450;
+        document.getElementById('pay-modal').style.display = 'flex';
+        document.getElementById('vnd').innerText = vnd.toLocaleString() + " VNĐ";
+        document.getElementById('qrcode').innerHTML = "";
+        new QRCode(document.getElementById("qrcode"), {
+            text: `https://img.vietqr.io/image/970422-0348710332-compact.jpg?amount=${vnd}&addInfo=GIALUAN_MURTHELP`,
+            width: 200, height: 200
         });
     }
 
-    // Tự generate 100 loại súng để đảm bảo không trống code
-    for(let i=6; i<=100; i++) {
-        products.push({ id: i, name: `Tactical Weapon #${1000 + i}`, price: Math.floor(Math.random()*20000)+500, code: i%3==0 ? 'CODE PURPLE' : 'CODE RED', stock: 50, img: 'https://www.glock.at/~/media/Images/Glock/Glock_17_Gen5_9x19_300px.png' });
+    function done() {
+        const total = cart.reduce((s, i) => s + i.price, 0);
+        totalRev += total;
+        totalOrders++;
+        document.getElementById('rev').innerText = `$${totalRev.toLocaleString()}`;
+        document.getElementById('orders').innerText = totalOrders;
+        cart = []; updateCart(); closePay();
+        Swal.fire('GIAO DỊCH THÀNH CÔNG', 'Đã ghi nhận vào kho dữ liệu đế chế.', 'success');
+    }
+
+    function closePay() { document.getElementById('pay-modal').style.display = 'none'; }
+    function showTab(id) {
+        ['arsenal', 'vips', 'boss'].forEach(t => document.getElementById('tab-'+t).style.display = 'none');
+        document.getElementById('tab-'+id).style.display = 'block';
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        event.currentTarget.classList.add('active');
     }
 </script>
 </body>
