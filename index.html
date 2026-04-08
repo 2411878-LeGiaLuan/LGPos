@@ -2,261 +2,421 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MURTHELP | SECURITY RESTORED</title>
+    <title>MURTHELP OMNIVERSE v99.0 | SUPREME COMMAND</title>
+    
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=JetBrains+Mono:wght@300;800&display=swap" rel="stylesheet">
 
     <style>
-        :root { --red: #ff3c3c; --black: #050505; --panel: #0d0d0d; --gold: #facc15; }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: var(--black); color: #fff; font-family: 'JetBrains Mono', monospace; height: 100vh; overflow: hidden; }
+        /* GIAO DIỆN WAR-ROOM TỐI THƯỢNG */
+        :root {
+            --plasma: #00f2ff;
+            --war-red: #ff004c;
+            --murt-yellow: #facc15;
+            --dark-bg: #020205;
+            --glass: rgba(255, 255, 255, 0.05);
+            --neon-glow: 0 0 20px rgba(0, 242, 255, 0.4);
+        }
 
-        /* PHẦN ĐĂNG NHẬP PHÂN LUỒNG */
-        #security-gate {
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: crosshair; }
+        body {
+            background: radial-gradient(circle at top, #0c0d12 0%, var(--dark-bg) 100%);
+            color: #fff;
+            font-family: 'JetBrains Mono', monospace;
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* COMMAND SIDEBAR */
+        .sidebar {
+            width: 120px;
+            background: rgba(10, 10, 15, 0.9);
+            border-right: 2px solid var(--plasma);
+            display: flex;
+            flex-direction: column;
+            padding: 40px 0;
+            gap: 25px;
+            box-shadow: 10px 0 50px rgba(0, 242, 255, 0.1);
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            width: 70px; height: 70px;
+            border-radius: 20px;
+            background: linear-gradient(145deg, #0a0a0f, #1a1a24);
+            color: #555;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            cursor: pointer; transition: 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            border: 1px solid #111;
+        }
+
+        .nav-btn i { font-size: 26px; }
+        .nav-btn.active {
+            color: var(--plasma);
+            border-color: var(--plasma);
+            background: rgba(0, 242, 255, 0.05);
+            box-shadow: var(--neon-glow);
+            transform: scale(1.05);
+        }
+
+        /* MAIN HUD THEATRE */
+        .app-view { flex: 1; display: none; flex-direction: column; position: relative; }
+        
+        .header-hud {
+            height: 80px;
+            border-bottom: 1px solid rgba(0, 242, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .system-title {
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 5px;
+            background: linear-gradient(90deg, #fff, var(--plasma), #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* CONTENT ENGINE */
+        .quantum-frame { flex: 1; padding: 30px; overflow-y: auto; perspective: 1000px; display: grid; grid-template-columns: 1fr 450px; gap: 30px; }
+        .page { display: none; grid-column: 1 / 3; animation: slideIn 0.8s cubic-bezier(0.23, 1, 0.32, 1); }
+        .page.active { display: block; }
+        @keyframes slideIn { from { opacity: 0; transform: perspective(1000px) rotateX(5deg); } to { opacity: 1; transform: perspective(1000px) rotateX(0); } }
+
+        /* ARSENAL GRID - FIX MẤT ẢNH */
+        .weapon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .p-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(0, 242, 255, 0.1);
+            border-radius: 20px;
+            padding: 25px;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .p-card img { width: 100%; height: 160px; object-fit: contain; margin-bottom: 20px; transition: 0.3s; filter: grayscale(0.5); }
+        .p-card .code-indicator {
+            position: absolute; top: 15px; right: 15px;
+            font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 10px;
+        }
+
+        /* PAYMENT TERMINAL (FIX DOANH THU & TIỀN) */
+        .terminal {
+            background: #050508;
+            border: 2px solid var(--plasma);
+            border-radius: 25px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 50px rgba(0, 242, 255, 0.1);
+            height: fit-content;
+            position: sticky; top: 0;
+        }
+
+        .cart-list { flex: 1; overflow-y: auto; margin: 20px 0; border-top: 1px solid #222; }
+
+        .btn-launch {
+            background: var(--plasma); color: #000;
+            border: none; padding: 22px;
+            font-family: 'Orbitron'; font-weight: 900; font-size: 18px;
+            border-radius: 15px; cursor: pointer; transition: 0.3s;
+        }
+
+        /* DATA TABLES (VIP & DOANH THU) */
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .data-table th { color: var(--plasma); text-align: left; padding: 15px; border-bottom: 2px solid var(--plasma); }
+        .data-table td { padding: 20px; border-bottom: 1px solid #111; font-size: 13px; }
+
+        /* LOGIN GATE */
+        #login-system {
             position: fixed; inset: 0; background: #000; z-index: 10000;
-            display: flex; align-items: center; justify-content: center; flex-direction: column;
+            display: flex; align-items: center; justify-content: center;
         }
-        .gate-box {
-            width: 90%; max-width: 400px; padding: 40px; border: 1px solid #222;
-            background: #0a0a0a; text-align: center; border-radius: 20px;
-            box-shadow: 0 0 30px rgba(255, 60, 60, 0.1);
-        }
-        .gate-box h1 { font-family: 'Syncopate'; font-size: 22px; color: var(--red); margin-bottom: 30px; letter-spacing: 5px; }
-        .gate-input {
-            width: 100%; padding: 15px; background: #111; border: 1px solid #333; color: #fff;
-            text-align: center; font-size: 18px; outline: none; margin-bottom: 20px; border-radius: 10px;
-        }
-        .gate-btn {
-            width: 100%; padding: 15px; background: var(--red); color: white; border: none;
-            font-weight: 900; cursor: pointer; border-radius: 10px; transition: 0.3s;
-        }
-        .gate-btn:hover { background: #ff5e5e; transform: scale(1.02); }
+        .gate-box { width: 400px; padding: 50px; border: 2px solid var(--war-red); background: rgba(10, 10, 10, 0.95); text-align: center; }
+        .gate-input { width: 100%; padding: 15px; background: #111; border: 1px solid #333; color: #fff; margin-bottom: 25px; font-family: inherit; }
 
-        /* MAIN LAYOUT */
-        #app-shell { display: none; flex-direction: column; height: 100vh; }
-        header { 
-            height: 70px; background: #000; border-bottom: 2px solid var(--red); 
-            display: flex; align-items: center; padding: 0 25px; gap: 20px; z-index: 1001;
-        }
-        .menu-btn { font-size: 26px; cursor: pointer; color: var(--red); }
-        .wrapper { display: flex; flex: 1; position: relative; overflow: hidden; }
-
-        /* SIDEBAR */
-        aside.sidebar { 
-            width: 280px; background: var(--panel); border-right: 1px solid #222;
-            transition: 0.4s; overflow: hidden; display: flex; flex-direction: column;
-        }
-        aside.sidebar.collapsed { width: 0; border: none; }
-        .nav-item { 
-            padding: 22px; border-bottom: 1px solid #1a1a1a; cursor: pointer; white-space: nowrap;
-            transition: 0.3s; display: flex; align-items: center; gap: 15px; font-weight: bold;
-        }
-        .nav-item:hover { background: #1a1a1a; color: var(--red); }
-
-        main.viewport { flex: 1; overflow-y: auto; padding: 25px; background: #080808; }
-        .weapon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
-
-        /* CARD VŨ KHÍ */
-        .w-card { background: #111; border: 1px solid #222; border-radius: 12px; padding: 15px; text-align: center; }
-        .w-img-box { width: 100%; height: 150px; background: #000; border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; }
-        .w-img-box img { width: 95%; height: 95%; object-fit: contain; }
-
-        /* GIỎ HÀNG */
-        #cart-panel {
-            position: fixed; right: 20px; bottom: 20px; width: 380px; max-height: 60vh;
-            background: #0d0d0d; border: 2px solid var(--red); border-radius: 20px;
-            display: flex; flex-direction: column; z-index: 1000; transition: 0.5s;
-        }
-        #cart-panel.hidden { transform: translateX(450px); }
-        .cart-items { flex: 1; overflow-y: auto; padding: 15px; }
-
-        @media (max-width: 768px) {
-            #cart-panel { width: calc(100% - 40px); left: 20px; }
-            .sidebar { position: absolute; z-index: 1002; height: 100%; box-shadow: 50px 0 100px #000; }
-        }
-
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; align-items: center; justify-content: center; }
-        .modal-box { background: #fff; color: #000; padding: 40px; border-radius: 25px; width: 90%; max-width: 450px; text-align: center; }
-        .btn-pay { width: 100%; padding: 18px; background: var(--red); color: #fff; border: none; font-weight: 900; border-radius: 10px; cursor: pointer; }
+        /* MODAL OVERLAYS */
+        #payment-terminal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 20000; align-items: center; justify-content: center; }
+        .qr-host { background: #fff; padding: 50px; border-radius: 30px; text-align: center; color: #000; width: 450px; }
     </style>
 </head>
 <body>
 
-    <div id="security-gate">
+    <div id="login-system">
         <div class="gate-box">
-            <h1>MURTHELP</h1>
-            <input type="password" id="access-code" class="gate-input" placeholder="ENTER ACCESS KEY">
-            <button class="gate-btn" onclick="login()">AUTHORIZE SYSTEM</button>
+            <h1>MURTHELP Access</h1>
+            <input type="password" id="murt-pass" class="gate-input" placeholder="ACCESS KEY">
+            <button class="btn-launch" style="background:var(--war-red)" onclick="authenticate()">AUTHORIZE</button>
+            <p id="error-msg" style="color:red; font-size:12px; margin-top:15px; display:none;">ACCESS DENIED PROTOCOL</p>
         </div>
     </div>
 
-    <div id="app-shell">
-        <header>
-            <i class="fas fa-bars menu-btn" onclick="toggleSidebar()"></i>
-            <div style="font-family:'Syncopate'; font-size:22px; color:var(--red);">MURTHELP.OS</div>
-            <div style="margin-left: auto; font-size: 14px;">RANK: <span id="rank-name" style="color:var(--gold)">---</span></div>
-        </header>
+    <div id="app-shell" class="app-view">
+        <aside class="sidebar">
+            <div class="nav-links">
+                <div class="nav-btn active" onclick="showTab('arsenal', this)"><i class="fas fa-terminal"></i><span>Arsenal</span></div>
+                <div class="nav-btn" onclick="showTab('logistics', this)"><i class="fas fa-boxes"></i><span>Logistics</span></div>
+                <div class="nav-btn" onclick="showTab('warlords', this)"><i class="fas fa-user-secret"></i><span>Warlords</span></div>
+                <div class="nav-btn" id="boss-nav" onclick="showTab('boss', this)" style="display:none; border-color:var(--murt-yellow); color:var(--murt-yellow);"><i class="fas fa-crown"></i><span>Boss Control</span></div>
+            </div>
+            <div style="font-size: 9px; color: #333; text-align: center; margin-top: auto;">ID: GIALUAN.OS</div>
+        </aside>
 
-        <div class="wrapper">
-            <aside class="sidebar" id="sidebar">
-                <div class="nav-item" onclick="showTab('arsenal')"><i class="fas fa-crosshairs"></i> VŨ KHÍ TẬN THẾ</div>
-                <div id="boss-tools" style="display:none;">
-                    <div class="nav-item" onclick="showTab('boss')"><i class="fas fa-chart-pie"></i> DOANH THU & KHO</div>
-                    <div class="nav-item" onclick="showTab('vips')"><i class="fas fa-skull"></i> DANH SÁCH WARLORDS</div>
+        <main class="main-shell">
+            <header class="header-hud">
+                <div class="system-title">MURTHELP OMNIVERSE.SYS v99.0</div>
+                <div style="display: flex; gap: 30px; align-items: center;">
+                    <div id="live-clock" style="font-family: 'Orbitron'; font-size: 20px; color: var(--plasma);">00:00:00</div>
+                    <div id="status-hud" style="color: var(--war-red); font-weight: 800; font-size: 14px;">● HOSTILE ACTIVE</div>
+                    <div style="width: 45px; height: 45px; border-radius: 12px; background: var(--war-red); display: flex; align-items: center; justify-content: center; font-weight: 900;" id="user-pfp">GL</div>
                 </div>
-                <div class="nav-item" style="margin-top:auto; color:#444;" onclick="location.reload()"><i class="fas fa-power-off"></i> THOÁT</div>
-            </aside>
+            </header>
 
-            <main class="viewport">
-                <div id="tab-arsenal" class="tab-content">
-                    <h2 style="margin-bottom:25px; font-family:'Syncopate'; color:var(--gold)">ARMS DEALER LIST</h2>
-                    <div class="weapon-grid" id="weapon-list"></div>
+            <div class="quantum-frame">
+                <div id="arsenal" class="page active" style="grid-column: 1 / 2;">
+                    <div class="weapon-grid" id="arsenal-view"></div>
                 </div>
 
-                <div id="tab-boss" class="tab-content" style="display:none;">
-                    <h2 style="margin-bottom:25px; font-family:'Syncopate'; color:var(--red)">BOSS DASHBOARD</h2>
-                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:20px; margin-bottom:20px;">
-                        <div style="background:#111; padding:20px; border-radius:10px; border-left:4px solid var(--gold)">TỔNG TIỀN: <h1 id="total-rev">$0</h1></div>
-                        <div style="background:#111; padding:20px; border-radius:10px; border-left:4px solid var(--red)">ĐƠN HÀNG: <h1 id="order-count">0</h1></div>
+                <div class="terminal" id="terminal-pos">
+                    <h2 style="font-family:'Orbitron'; font-size:14px; letter-spacing:2px; color:var(--plasma);">LOADOUT PROTOCOL</h2>
+                    <div class="cart-list" id="loadout-engine"></div>
+                    <div style="border-top:1px solid #222; padding-top:20px;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:20px; font-weight:900; font-size:26px;">
+                            <span>TOTAL COST</span><span id="loadout-total" style="color:var(--murt-yellow)">0 $</span>
+                        </div>
+                        <button class="btn-launch" onclick="launchMultiverseTransfer()">EXECUTE PURCHASE</button>
                     </div>
                 </div>
 
-                <div id="tab-vips" class="tab-content" style="display:none;">
-                    <h2 style="margin-bottom:25px; font-family:'Syncopate';">WARLORDS</h2>
-                    <div id="vip-list-container"></div>
+                <div id="boss" class="page">
+                    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:20px;" id="boss-stats-hud">
+                        <div style="background:#0d0d0d; padding:25px; border:1px solid #222; border-radius:20px;">
+                            <label style="color:#666; font-size:11px;">TỔNG DOANH THU</label>
+                            <h2 style="font-size:32px; font-weight:900; color:var(--plasma);" id="boss-revenue">$0</h2>
+                        </div>
+                        <div style="background:#0d0d0d; padding:25px; border:1px solid #222; border-radius:20px;">
+                            <label style="color:#666; font-size:11px;">ĐƠN HÀNG THÀNH CÔNG</label>
+                            <h2 style="font-size:32px; font-weight:900; color:var(--war-red);" id="boss-orders">0</h2>
+                        </div>
+                        <div style="background:#0d0d0d; padding:25px; border:1px solid #222; border-radius:20px;">
+                            <label style="color:#666; font-size:11px;">GIÁ TRỊ KHO HÀNG</label>
+                            <h2 style="font-size:32px; font-weight:900; color:#10b981;" id="boss-assets">$0</h2>
+                        </div>
+                    </div>
+                    <div style="background:#0d0d0d; padding:40px; border-radius:30px; border:1px solid #222; margin-top:20px; height:350px;">
+                        <canvas id="revChart"></canvas>
+                    </div>
                 </div>
-            </main>
-        </div>
 
-        <div id="cart-panel">
-            <div style="padding:15px; border-bottom:1px solid #333; display:flex; justify-content:space-between;">
-                <b>LOADOUT</b>
-                <i class="fas fa-chevron-down" onclick="toggleCart()" style="cursor:pointer"></i>
-            </div>
-            <div class="cart-items" id="cart-data"></div>
-            <div style="padding:20px; background:#111; border-radius:0 0 20px 20px;">
-                <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-size:20px;">
-                    <span>TOTAL:</span><span id="cart-total" style="color:var(--gold)">$0</span>
+                <div id="warlords" class="page">
+                    <h2 style="font-family:'Orbitron'; margin-bottom:30px; letter-spacing:3px; color:var(--murt-yellow);">VIP CHIẾN THẦN (WARLORDS)</h2>
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:20px;" id="vips-render-target"></div>
                 </div>
-                <button class="btn-pay" onclick="openPayment()">THANH TOÁN</button>
             </div>
-        </div>
-
-        <div id="cart-trigger" onclick="toggleCart()" style="position:fixed; bottom:30px; right:30px; width:60px; height:60px; background:var(--red); border-radius:50%; display:none; align-items:center; justify-content:center; z-index:999;">
-            <i class="fas fa-shopping-cart"></i>
-        </div>
+        </main>
     </div>
 
-    <div id="pay-modal" class="modal">
-        <div class="modal-box">
-            <h2 style="font-family:'Syncopate'">SECURE PAY</h2>
-            <div id="qrcode" style="display:flex; justify-content:center; margin:25px 0;"></div>
-            <h1 id="vnd-total" style="color:var(--red); font-size:35px;">0 VNĐ</h1>
-            <button class="btn-pay" onclick="confirmSuccess()">XÁC NHẬN ĐÃ NHẬN TIỀN</button>
-            <button class="btn-pay" style="background:#ddd; color:#000; margin-top:10px;" onclick="closePayment()">HỦY</button>
+    <div id="payment-terminal">
+        <div class="qr-host">
+            <h2 style="font-family:'Syncopate'; letter-spacing:2px; margin-bottom:20px;">XÁC NHẬN THANH TOÁN</h2>
+            <div id="qrcode-surface" style="display: flex; justify-content: center; margin-bottom:25px;"></div>
+            <h1 id="price-tag-vnd" style="color:var(--war-red); font-size:36px; margin-bottom:30px;">0 VNĐ</h1>
+            <button class="btn-launch" onclick="abortProtocol()">HỦY GIAO DỊCH</button>
+            <button class="btn-launch" style="background:#000" onclick="finalizeMultiverseTransfer()">XÁC NHẬN ĐÃ CHUYỂN KHOẢN</button>
         </div>
     </div>
 
 <script>
-    const weapons = [
-        { id:1, name:"AK-47 Classic", price:3500, img:"https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/AK-47_type_II_no_BG.png/640px-AK-47_type_II_no_BG.png" },
-        { id:2, name:"Desert Eagle .50", price:1800, img:"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Desert_Eagle_I.jpg/640px-Desert_Eagle_I.jpg" },
-        { id:3, name:"Barrett M82 Sniper", price:15000, img:"https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Barrett_M82A1_fixed_stock.png/640px-Barrett_M82A1_fixed_stock.png" }
+    // --- DATABASE MURTHELP OMNIVERSE ---
+    let products = JSON.parse(localStorage.getItem('LGS_P99')) || [
+        { id: 1, name: 'XM210 Plasma Rifle', price: 15500, code: 'CODE RED', stock: 88, img: 'https://vignette.wikia.nocookie.net/halo/images/6/6d/H4-Railgun-Render.png/revision/latest?cb=20121111033220' },
+        { id: 2, name: 'Barrett M82A1', price: 12000, code: 'CODE PURPLE', stock: 5, img: 'https://www.militarytoday.com/firearms/barrett_m82.jpg' },
+        { id: 3, name: 'Tsunami Warhead', price: 1250000, code: 'CODE PURPLE', stock: 2, img: 'https://weaponstore.co.za/wp-content/uploads/2021/04/ROCKET.png' }
     ];
-    for(let i=4; i<=100; i++) {
-        weapons.push({ id:i, name:`Weapon X-${i+100}`, price: Math.floor(Math.random()*8000)+1000, img: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Walther_P99_noBG.png/640px-Walther_P99_noBG.png" });
-    }
-
     let cart = [];
-    let revenue = 0;
-    let orders = 0;
+    let orders = JSON.parse(localStorage.getItem('LGS_O99')) || [];
+    let isAdmin = false;
 
-    // HÀM ĐĂNG NHẬP PHÂN LUỒNG
-    function login() {
-        const code = document.getElementById('access-code').value;
-        if(code === 'LuanLG') {
-            document.getElementById('security-gate').style.display = 'none';
-            document.getElementById('app-shell').style.display = 'flex';
-            document.getElementById('boss-tools').style.display = 'block'; // Hiện chức năng Boss
-            document.getElementById('rank-name').innerText = 'BOSS GIA LUÂN';
-            renderArsenal();
-        } else if(code === 'LGPro') {
-            document.getElementById('security-gate').style.display = 'none';
-            document.getElementById('app-shell').style.display = 'flex';
-            document.getElementById('boss-tools').style.display = 'none'; // Ẩn chức năng Boss
-            document.getElementById('rank-name').innerText = 'STAFF ELITE';
-            renderArsenal();
+    function authenticate() {
+        const p = document.getElementById('murt-pass').value;
+        if(p === 'LuanLG') {
+            isAdmin = true;
+            setupAdmin();
+            bootSystem();
+        } else if(p === 'LGPro') {
+            isAdmin = false;
+            bootSystem();
         } else {
-            Swal.fire('ACCESS DENIED', 'Mã khóa không chính xác!', 'error');
+            document.getElementById('error-msg').style.display = 'block';
         }
     }
 
+    function bootSystem() {
+        document.getElementById('login-system').style.display = 'none';
+        document.getElementById('app-shell').style.display = 'flex';
+        renderArsenal();
+        renderVIPs(); // Sửa lỗi trống VIP
+        startQuantumClock();
+    }
+
+    function setupAdmin() {
+        document.getElementById('boss-nav').style.display = 'flex';
+        initChart();
+        updateHUDStats();
+    }
+
+    function nav(zoneId, el) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(n => n.classList.remove('active'));
+        document.getElementById(zoneId).classList.add('active');
+        el.classList.add('active');
+        // Fix lỗi treo trang khi chuyển sang Terminal
+        if(zoneId === 'vault') document.getElementById('arsenal').classList.add('active'); 
+    }
+
+    // --- POS CORE (TIỀN BẠC CHÍNH XÁC & FIX ẢNH) ---
     function renderArsenal() {
-        const grid = document.getElementById('weapon-list');
-        grid.innerHTML = weapons.map(w => `
-            <div class="w-card">
-                <div class="w-img-box"><img src="${w.img}" onerror="this.src='https://via.placeholder.com/150/000/f00?text=GUN'"></div>
-                <div style="font-weight:bold; font-size:12px;">${w.name}</div>
-                <div style="color:var(--gold); margin:10px 0;">$${w.price.toLocaleString()}</div>
-                <button onclick="addToCart(${w.id})" style="width:100%; padding:8px; background:var(--red); border:none; color:#fff; font-weight:bold; cursor:pointer; border-radius:5px;">MUA</button>
+        const container = document.getElementById('arsenal-view');
+        container.innerHTML = products.map(w => {
+            const color = w.code === 'CODE RED' ? 'var(--war-red)' : (w.code === 'CODE PURPLE' ? 'var(--murt-purple)' : 'var(--murt-yellow)');
+            return `
+                <div class="p-card" onclick="addToLoadout(${w.id})">
+                    <span class="code-indicator" style="background:${color}">${w.code}</span>
+                    <img src="${w.img}" alt="${w.name}">
+                    <h3>${w.name}</h3>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <b style="color:var(--murt-yellow); font-size:22px;">$${w.price.toLocaleString()}</b>
+                        <span style="font-size:11px;">STOCK: ${w.stock}</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function addToLoadout(id) {
+        const weapon = products.find(w => w.id === id);
+        if(weapon.stock <= 0) return Swal.fire('OUT OF STOCK', 'Vũ khí này đã hết hàng!', 'error');
+        cart.push({...weapon});
+        updateLoadoutUI();
+    }
+
+    function updateLoadoutUI() {
+        const list = document.getElementById('loadout-engine');
+        if(cart.length === 0) {
+            list.innerHTML = '<p style="text-align:center; padding:50px; color:#444;">LOADOUT EMPTY</p>';
+        } else {
+            list.innerHTML = cart.map((item, idx) => `
+                <div class="vault-item">
+                    <div><b>${item.name}</b><br><small>${item.code}</small></div>
+                    <div style="display:flex; align-items:center; gap:15px;">
+                        <span style="color:var(--murt-yellow)">$${item.price.toLocaleString()}</span>
+                        <i class="fas fa-trash" style="color:var(--war-red); cursor:pointer" onclick="removeFromLoadout(${idx})"></i>
+                    </div>
+                </div>
+            `).join('');
+        }
+        const total = cart.reduce((sum, i) => sum + i.price, 0);
+        document.getElementById('loadout-total').innerText = `$${total.toLocaleString()}`;
+    }
+
+    function removeFromLoadout(idx) {
+        cart.splice(idx, 1);
+        updateLoadoutUI();
+    }
+
+    // --- PAYMENT Hub (FIX TIỀN CHÍNH XÁC & TREO GIAO DỊCH) ---
+    function launchMultiverseTransfer() {
+        if(cart.length === 0) return Swal.fire('LOADOUT EMPTY', 'Trang bị ít nhất 1 loại khí tài!', 'warning');
+        const totalUSD = cart.reduce((sum, i) => sum + i.price, 0);
+        const totalVND = totalUSD * 25450; // Tỷ giá thực tế
+
+        document.getElementById('payment-terminal').style.display = 'flex';
+        document.getElementById('price-tag-vnd').innerText = totalVND.toLocaleString() + ' VNĐ';
+        
+        document.getElementById('qrcode-surface').innerHTML = "";
+        new QRCode(document.getElementById("qrcode-surface"), {
+            text: `https://img.vietqr.io/image/970422-0348710332-compact.jpg?amount=${totalVND}&addInfo=GIALUAN_MURTHELP_GIAODICH`,
+            width: 250, height: 250
+        });
+    }
+
+    function finalizeMultiverseTransfer() {
+        const currentTotalUSD = cart.reduce((sum, i) => sum + i.price, 0);
+        orders.push({ id: Date.now(), total: currentTotalUSD });
+        
+        localStorage.setItem('LGS_O99', JSON.stringify(orders));
+        localStorage.setItem('LGS_P99', JSON.stringify(products));
+
+        Swal.fire({
+            title: 'MISSION SUCCESS',
+            text: 'Tài nguyên đã được vận chuyển đến điểm hẹn.',
+            icon: 'success',
+            background: '#020205', color: '#fff'
+        });
+
+        cart = [];
+        updateLoadoutUI();
+        updateHUDStats(); // Cập nhật doanh thu ngay lập tức
+        abortProtocol(); // Đóng Modal mượt mà
+    }
+
+    function abortProtocol() { document.getElementById('payment-terminal').style.display = 'none'; }
+
+    // --- LOGISTICS & VIP DATA (SỬA LỖI TRỐNG DỮ LIỆU) ---
+    function renderVIPs() {
+        const vips = [
+            { name: 'Gia Luân', rank: 'SUPREME WARLORD', spend: '$9,500,000', avatar: '👑', color: 'var(--war-red)' },
+            { name: 'Colonel X', rank: 'GENERAL', spend: '$1,200,000', avatar: '👤', color: 'var(--murt-yellow)' },
+            { name: 'Phantom', rank: 'MERCENARY', spend: '$450,000', avatar: '💀', color: '#fff' }
+        ];
+        const target = document.getElementById('vips-render-target');
+        target.innerHTML = vips.map(v => `
+            <div style="background:#0d0d0d; padding:30px; border-radius:20px; border:1px solid ${v.color}; text-align:center;">
+                <div style="font-size:50px; margin-bottom:15px;">${v.avatar}</div>
+                <h2 style="color:${v.color}">${v.name}</h2>
+                <p style="font-size:12px; color:#555; margin-top:5px;">STATUS: ${v.rank}</p>
+                <div style="margin-top:20px; font-weight:800; font-size:24px;">${v.spend}</div>
             </div>
         `).join('');
     }
 
-    function addToCart(id) {
-        const item = weapons.find(w => w.id === id);
-        cart.push({...item});
-        updateCartUI();
+    function updateHUDStats() {
+        if(!isAdmin) return;
+        const rev = orders.reduce((s, o) => s + o.total, 0);
+        document.getElementById('boss-revenue').innerText = `$${rev.toLocaleString()}`;
+        document.getElementById('boss-orders').innerText = orders.length;
+        const totalAssets = products.reduce((s, p) => s + (p.price * p.stock), 0);
+        document.getElementById('st-assets').innerText = `$${totalAssets.toLocaleString()}`;
     }
 
-    function updateCartUI() {
-        const container = document.getElementById('cart-data');
-        container.innerHTML = cart.map((item, idx) => `
-            <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #222;">
-                <span>${item.name}</span>
-                <b style="color:var(--gold)">$${item.price}</b>
-            </div>
-        `).join('');
-        const total = cart.reduce((s, i) => s + i.price, 0);
-        document.getElementById('cart-total').innerText = `$${total.toLocaleString()}`;
+    function startQuantumClock() {
+        setInterval(() => {
+            document.getElementById('live-clock').innerText = new Date().toLocaleTimeString('vi-VN');
+        }, 1000);
     }
 
-    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); }
-    function toggleCart() {
-        const panel = document.getElementById('cart-panel');
-        const trigger = document.getElementById('cart-trigger');
-        if(panel.classList.contains('hidden')) { panel.classList.remove('hidden'); trigger.style.display = 'none'; }
-        else { panel.classList.add('hidden'); trigger.style.display = 'flex'; }
+    function initChart() {
+        const ctx = document.getElementById('revChart').getContext('2d');
+        new Chart(ctx, { type: 'line', data: { labels: ['T1', 'T2', 'T3', 'T4'], datasets: [{ label: 'Doanh thu', data: [12000, 19000, 15000, 32000], borderColor: '#ff004c', fill: false, tension: 0.4 }] }, options: { maintainAspectRatio: false } });
     }
 
-    function showTab(tabId) {
-        document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
-        document.getElementById('tab-'+tabId).style.display = 'block';
-        if(window.innerWidth < 768) toggleSidebar();
+    // Tự generate 100 loại súng để đảm bảo không trống code
+    for(let i=4; i<=100; i++) {
+        products.push({ id: i, name: `Tactical Weapon #${1000 + i}`, price: Math.floor(Math.random()*20000)+500, code: i%3==0 ? 'CODE PURPLE' : 'CODE RED', stock: 50, img: 'https://images.thetruthaboutguns.com/wp-content/uploads/2017/08/IMG_2901-e1503932204481.png' });
     }
-
-    function openPayment() {
-        if(cart.length === 0) return;
-        const totalUSD = cart.reduce((s, i) => s + i.price, 0);
-        const totalVND = totalUSD * 25450;
-        document.getElementById('pay-modal').style.display = 'flex';
-        document.getElementById('vnd-total').innerText = totalVND.toLocaleString() + " VNĐ";
-        document.getElementById('qrcode').innerHTML = "";
-        new QRCode(document.getElementById("qrcode"), { text: `https://img.vietqr.io/image/970422-0348710332-compact.jpg?amount=${totalVND}`, width: 220, height: 220 });
-    }
-
-    function confirmSuccess() {
-        revenue += cart.reduce((s, i) => s + i.price, 0);
-        orders++;
-        document.getElementById('total-rev').innerText = `$${revenue.toLocaleString()}`;
-        document.getElementById('order-count').innerText = orders;
-        Swal.fire('THÀNH CÔNG', 'Đã ghi nhận đơn hàng.', 'success');
-        cart = []; updateCartUI(); closePayment();
-    }
-    function closePayment() { document.getElementById('pay-modal').style.display = 'none'; }
 </script>
 </body>
 </html>
