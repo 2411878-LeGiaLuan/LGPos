@@ -3,332 +3,291 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LGShop POS Beyond Enterprise v11.0</title>
+    <title>LGShop Pro v12.0 - Global Vision</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         :root {
-            --p: #4f46e5; --dark: #020617; --success: #22c55e;
-            --danger: #ef4444; --warning: #eab308; --bg: #fdfdfd;
+            --accent: #6366f1; --dark-bg: #0f172a; --panel: #ffffff;
+            --success: #22c55e; --warning: #f59e0b; --text: #1e293b;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
-        body { background: var(--bg); height: 100vh; display: flex; overflow: hidden; color: #1e293b; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: #f1f5f9; display: flex; height: 100vh; overflow: hidden; color: var(--text); }
 
-        /* NEUMORPHIC SIDEBAR */
-        .sidebar { 
-            width: 100px; background: var(--dark); display: flex; flex-direction: column; 
-            padding: 30px 0; gap: 15px; align-items: center; border-right: 1px solid #e2e8f0;
-        }
-        .nav-link { 
-            color: #64748b; width: 65px; height: 65px; border-radius: 20px; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            cursor: pointer; transition: 0.3s; gap: 5px;
-        }
-        .nav-link.active { background: var(--p); color: white; box-shadow: 0 10px 25px rgba(79, 70, 229, 0.4); }
-        .nav-link i { font-size: 22px; }
-        .nav-link span { font-size: 9px; font-weight: 800; text-transform: uppercase; }
+        /* SIDEBAR PRO */
+        .sidebar { width: 90px; background: var(--dark-bg); display: flex; flex-direction: column; align-items: center; padding: 25px 0; gap: 20px; box-shadow: 4px 0 10px rgba(0,0,0,0.1); }
+        .nav-btn { width: 60px; height: 60px; border-radius: 18px; color: #64748b; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; gap: 4px; }
+        .nav-btn.active { background: var(--accent); color: white; box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4); }
+        .nav-btn i { font-size: 20px; }
+        .nav-btn span { font-size: 9px; font-weight: 700; text-transform: uppercase; }
 
-        /* MAIN CONTENT */
-        .viewport { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #f8fafc; }
-        .header { 
-            background: white; padding: 20px 40px; display: flex; justify-content: space-between; 
-            align-items: center; border-bottom: 1px solid #e2e8f0;
-        }
-        .shop-id { font-size: 20px; font-weight: 900; background: linear-gradient(to right, var(--p), #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        /* MAIN APP */
+        .app-container { flex: 1; display: flex; flex-direction: column; position: relative; }
+        .top-nav { height: 75px; background: white; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; padding: 0 35px; }
+        .brand { font-size: 22px; font-weight: 900; background: linear-gradient(45deg, var(--accent), #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        .content { flex: 1; padding: 30px; overflow-y: auto; }
-        .page { display: none; animation: fadeIn 0.5s ease; }
+        .view-content { flex: 1; padding: 25px; overflow-y: auto; }
+        .page { display: none; animation: slideUp 0.4s ease-out; }
         .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.99); } to { opacity: 1; transform: scale(1); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* POS GRID */
-        .pos-layout { display: grid; grid-template-columns: 1fr 480px; gap: 30px; height: 100%; }
-        .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; align-content: start; }
+        /* POS LAYOUT */
+        .pos-layout { display: grid; grid-template-columns: 1fr 450px; gap: 25px; height: 100%; }
+        .menu-section { display: flex; flex-direction: column; gap: 20px; }
+        .search-box { background: white; padding: 12px 20px; border-radius: 15px; border: 1px solid #e2e8f0; display: flex; gap: 12px; align-items: center; }
+        .search-box input { border: none; outline: none; width: 100%; font-size: 15px; font-weight: 600; }
+
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 18px; }
+        .p-card { background: white; border-radius: 22px; padding: 20px; text-align: center; border: 2px solid transparent; transition: 0.3s; position: relative; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .p-card:hover { border-color: var(--accent); transform: scale(1.03); }
+        .p-card .emoji { font-size: 45px; display: block; margin-bottom: 10px; }
+        .p-card h4 { font-size: 15px; font-weight: 700; margin-bottom: 5px; }
+        .p-card .stock-tag { position: absolute; top: 12px; left: 12px; font-size: 10px; background: #f1f5f9; padding: 4px 8px; border-radius: 8px; font-weight: 800; }
+
+        /* BILLING PANEL */
+        .billing-panel { background: white; border-radius: 30px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05); overflow: hidden; }
+        .bill-body { flex: 1; padding: 25px; overflow-y: auto; }
+        .bill-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 15px; background: #f8fafc; border-radius: 18px; }
         
-        .p-card { 
-            background: white; border-radius: 28px; padding: 25px; text-align: center; cursor: pointer;
-            border: 2px solid transparent; transition: 0.3s; position: relative;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
-        }
-        .p-card:hover { border-color: var(--p); transform: translateY(-8px); }
-        .p-card .emoji { font-size: 55px; display: block; margin-bottom: 15px; }
-        .p-card .badge { position: absolute; top: 15px; right: 15px; background: #e0e7ff; color: var(--p); padding: 5px 12px; border-radius: 12px; font-size: 11px; font-weight: 800; }
+        .bill-footer { padding: 30px; border-top: 1px solid #f1f5f9; background: #f8fafc; }
+        .pay-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .pay-btn { padding: 14px; border-radius: 15px; border: 2px solid #e2e8f0; background: white; cursor: pointer; font-weight: 800; transition: 0.2s; font-size: 13px; }
+        .pay-btn.active { border-color: var(--accent); background: #eef2ff; color: var(--accent); }
 
-        /* CART PANEL (PREMIUM) */
-        .cart-panel { background: white; border-radius: 35px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.1); }
-        .cart-body { flex: 1; padding: 25px; overflow-y: auto; }
-        .cart-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 15px; background: #f8fafc; border-radius: 20px; }
-        
-        .cart-footer { padding: 30px; background: #f8fafc; border-top: 1px solid #e2e8f0; }
-        .total-area { display: flex; justify-content: space-between; margin-bottom: 25px; }
-        .btn-checkout { 
-            width: 100%; padding: 22px; border-radius: 22px; border: none; background: var(--dark); 
-            color: white; font-size: 20px; font-weight: 900; cursor: pointer; transition: 0.3s;
-        }
-        .btn-checkout:hover { background: var(--p); letter-spacing: 1px; }
+        .checkout-btn { width: 100%; padding: 20px; border-radius: 20px; border: none; background: var(--dark-bg); color: white; font-size: 18px; font-weight: 900; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.3); }
+        .checkout-btn:hover { background: var(--accent); }
 
-        /* LOYALTY SECTION */
-        .loyalty-card { background: linear-gradient(135deg, #1e293b, #0f172a); color: white; padding: 20px; border-radius: 25px; margin-bottom: 20px; display: flex; align-items: center; gap: 15px; }
+        /* KDS VIEW */
+        .kds-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .kds-ticket { background: #fffbeb; border: 2px solid #fef3c7; border-radius: 20px; padding: 20px; position: relative; }
+        .kds-ticket.done { opacity: 0.5; background: #f0fdf4; border-color: #dcfce7; }
+        .ticket-header { display: flex; justify-content: space-between; border-bottom: 1px dashed #f59e0b; padding-bottom: 10px; margin-bottom: 10px; font-weight: 800; }
 
-        /* REPORT WIDGETS */
-        .stat-group { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
-        .stat-card { background: white; padding: 25px; border-radius: 30px; border: 1px solid #f1f5f9; position: relative; overflow: hidden; }
-        .stat-card::before { content:''; position: absolute; left: 0; top:0; width: 6px; height: 100%; background: var(--p); }
-
-        /* TABLE UI */
-        .table-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 20px; }
-        .table-btn { 
-            height: 120px; border-radius: 25px; background: white; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; border: 2px solid #f1f5f9;
-        }
-        .table-btn.active { border-color: var(--danger); background: #fef2f2; color: var(--danger); }
-        .table-btn i { font-size: 28px; margin-bottom: 8px; }
+        /* ANALYTICS */
+        .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 25px; }
+        .s-card { background: white; padding: 25px; border-radius: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .s-card b { font-size: 26px; display: block; margin-top: 5px; }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
-        <div class="nav-link active" onclick="show('pos', this)"><i class="fas fa-cash-register"></i><span>POS</span></div>
-        <div class="nav-link" onclick="show('orders', this)"><i class="fas fa-list-ul"></i><span>Đơn hàng</span></div>
-        <div class="nav-link" onclick="show('tables', this)"><i class="fas fa-th-large"></i><span>Phòng bàn</span></div>
-        <div class="nav-link" onclick="show('analytics', this)"><i class="fas fa-chart-line"></i><span>Báo cáo</span></div>
-        <div class="nav-link" onclick="resetSys()"><i class="fas fa-power-off"></i><span>Đóng ca</span></div>
+        <div class="nav-btn active" onclick="nav('pos', this)"><i class="fas fa-cash-register"></i><span>Bán</span></div>
+        <div class="nav-btn" onclick="nav('kds', this)"><i class="fas fa-utensils"></i><span>Bếp</span></div>
+        <div class="nav-btn" onclick="nav('inventory', this)"><i class="fas fa-boxes-stacked"></i><span>Kho</span></div>
+        <div class="nav-btn" onclick="nav('reports', this)"><i class="fas fa-chart-line"></i><span>Báo cáo</span></div>
     </div>
 
-    <div class="viewport">
-        <div class="header">
-            <div class="shop-id">LGSHOP PREMIUM v11.0</div>
+    <div class="app-container">
+        <div class="top-nav">
+            <div class="brand">LGSHOP PRO v12.0 <span style="font-size: 10px; color: #64748b; font-weight: 600;">GLOBAL VISION</span></div>
             <div style="display: flex; gap: 25px; align-items: center;">
-                <div style="text-align: right;"><b id="live-clock"></b><br><small>Hôm nay: <span id="current-date"></span></small></div>
-                <div style="background: #e0e7ff; color: var(--p); padding: 10px 20px; border-radius: 15px; font-weight: 800;">ADMIN: GIA LUÂN</div>
+                <div style="text-align: right;"><b id="clock">00:00:00</b><br><small id="date"></small></div>
+                <div style="width: 45px; height: 45px; border-radius: 14px; background: var(--accent); color: white; display: flex; align-items: center; justify-content: center; font-weight: 900;">GL</div>
             </div>
         </div>
 
-        <div class="content">
+        <div class="view-content">
             <div id="pos" class="page active">
                 <div class="pos-layout">
-                    <div class="menu-grid" id="main-menu"></div>
-                    <div class="cart-panel">
-                        <div class="cart-body">
-                            <div class="loyalty-card">
-                                <i class="fas fa-crown" style="color:var(--warning); font-size:24px"></i>
-                                <div><small>Khách hàng thành viên</small><br><b>Tích điểm 5% cho mỗi đơn</b></div>
-                            </div>
-                            <h3 style="margin-bottom:20px; font-weight:900">GIỎ HÀNG</h3>
-                            <div id="cart-items-box"></div>
+                    <div class="menu-section">
+                        <div class="search-box">
+                            <i class="fas fa-search" style="color: #94a3b8;"></i>
+                            <input type="text" id="m-search" placeholder="Tìm tên món hoặc mã vạch..." onkeyup="filterMenu()">
                         </div>
-                        <div class="cart-footer">
-                            <div class="total-area">
-                                <span style="font-weight:700; color:#64748b">TỔNG CỘNG</span>
-                                <b id="cart-total" style="font-size:35px; color:var(--dark)">0 đ</b>
+                        <div class="product-grid" id="product-list"></div>
+                    </div>
+                    <div class="billing-panel">
+                        <div style="padding: 25px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;">
+                            <h3 style="font-weight: 800;">ĐƠN HÀNG #<span id="order-id"></span></h3>
+                            <button onclick="clearCart()" style="border:none; color:red; font-weight:700; background:none; cursor:pointer;">Xóa hết</button>
+                        </div>
+                        <div class="bill-body" id="cart-items"></div>
+                        <div class="bill-footer">
+                            <div class="pay-selector">
+                                <button class="pay-btn active" id="m-cash" onclick="setPay('Tiền mặt')">💵 TIỀN MẶT</button>
+                                <button class="pay-btn" id="m-qr" onclick="setPay('Quét QR')">📲 VIETQR</button>
                             </div>
-                            <div style="display:flex; gap:10px; margin-bottom:20px">
-                                <button onclick="setMethod('Cash')" id="m-cash" style="flex:1; padding:15px; border-radius:15px; border:2px solid var(--p); background:#eef2ff; color:var(--p); font-weight:800; cursor:pointer">💵 TIỀN MẶT</button>
-                                <button onclick="setMethod('QR')" id="m-qr" style="flex:1; padding:15px; border-radius:15px; border:2px solid #e2e8f0; background:white; font-weight:800; cursor:pointer">📲 CHUYỂN QR</button>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 25px; align-items: center;">
+                                <span style="font-weight: 700; color: #64748b;">TỔNG THANH TOÁN</span>
+                                <b style="font-size: 30px; color: var(--accent);" id="total-val">0 đ</b>
                             </div>
-                            <button class="btn-checkout" onclick="checkout()">XUẤT HÓA ĐƠN</button>
+                            <button class="checkout-btn" onclick="handleCheckout()">THANH TOÁN & ĐẨY XUỐNG BẾP</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div id="tables" class="page">
-                <h2 style="margin-bottom:30px">Quản lý khu vực bàn</h2>
-                <div class="table-grid" id="table-box"></div>
+            <div id="kds" class="page">
+                <h2 style="margin-bottom: 25px;">Hệ thống hiển thị nhà bếp (KDS)</h2>
+                <div class="kds-grid" id="kds-container"></div>
             </div>
 
-            <div id="analytics" class="page">
-                <div class="stat-group">
-                    <div class="stat-card"><small>Doanh thu ca</small><h2 id="st-rev">0 đ</h2></div>
-                    <div class="stat-card"><small>Đã phục vụ</small><h2 id="st-orders">0 Đơn</h2></div>
-                    <div class="stat-card"><small>Điểm Loyalty</small><h2>1,250 P</h2></div>
-                    <div class="stat-card"><small>Món Hot</small><h2 id="st-hot" style="color:var(--p)">--</h2></div>
+            <div id="reports" class="page">
+                <div class="stat-row">
+                    <div class="s-card"><small>Doanh thu ca</small><b id="st-rev">0 đ</b></div>
+                    <div class="s-card"><small>Đơn hoàn tất</small><b id="st-count">0</b></div>
+                    <div class="s-card"><small>Tồn kho thấp</small><b style="color: var(--danger);">3 Món</b></div>
+                    <div class="s-card"><small>Khách thành viên</small><b>12</b></div>
                 </div>
-                <div style="background:white; padding:40px; border-radius:35px; height:450px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
-                    <canvas id="premiumChart"></canvas>
+                <div style="background: white; padding: 35px; border-radius: 30px; height: 450px;">
+                    <canvas id="mainChart"></canvas>
                 </div>
-            </div>
-
-            <div id="orders" class="page">
-                <h2 style="margin-bottom:25px">Nhật ký giao dịch</h2>
-                <div id="order-log-full" style="display:flex; flex-direction:column; gap:10px"></div>
             </div>
         </div>
     </div>
 
 <script>
     // --- DATABASE ---
-    let products = JSON.parse(localStorage.getItem('LG_P_v11')) || [
-        { id: 1, name: 'Hồng Trà Macchiato', price: 35000, emoji: '🧋', sold: 0 },
-        { id: 2, name: 'Latte Hạnh Nhân', price: 55000, emoji: '☕', sold: 0 },
-        { id: 3, name: 'Matcha Đá Xay', price: 65000, emoji: '🍵', sold: 0 },
-        { id: 4, name: 'Bánh Sừng Bò', price: 45000, emoji: '🥐', sold: 0 },
-        { id: 5, name: 'Trà Nhãn Quế', price: 40000, emoji: '🍹', sold: 0 }
+    let menu = JSON.parse(localStorage.getItem('LGS_P12')) || [
+        { id: 1, name: 'Hồng Trà Sữa Pro', price: 35000, emoji: '🧋', stock: 88 },
+        { id: 2, name: 'Cafe Muối Biển', price: 45000, emoji: '☕', stock: 12 },
+        { id: 3, name: 'Trà Nhãn Sen', price: 55000, emoji: '🍹', stock: 45 },
+        { id: 4, name: 'Bánh Mì Pate GL', price: 25000, emoji: '🥖', stock: 5 }
     ];
-    let tables = Array.from({length: 12}, (_, i) => ({ id: i+1, busy: false }));
-    let orders = JSON.parse(localStorage.getItem('LG_O_v11')) || [];
     let cart = [];
-    let payMethod = 'Cash';
+    let kdsOrders = [];
+    let history = JSON.parse(localStorage.getItem('LGS_H12')) || [];
+    let method = 'Tiền mặt';
 
-    // --- CORE ---
+    // --- CORE LOGIC ---
     function init() {
         renderMenu();
-        renderTables();
-        updateStats();
-        startTime();
-        document.getElementById('current-date').innerText = new Date().toLocaleDateString('vi-VN');
+        updateDisplay();
+        genID();
+        updateTime();
+        setInterval(updateTime, 1000);
     }
 
-    function show(id, el) {
+    function nav(id, el) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(n => n.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         el.classList.add('active');
-        if(id === 'analytics') initChart();
-        if(id === 'orders') renderOrders();
+        if(id === 'reports') renderChart();
+        if(id === 'kds') renderKDS();
     }
 
     function renderMenu() {
-        document.getElementById('main-menu').innerHTML = products.map(p => `
+        document.getElementById('product-list').innerHTML = menu.map(p => `
             <div class="p-card" onclick="addToCart(${p.id})">
-                <span class="badge">HOT</span>
+                <span class="stock-tag">Tồn: ${p.stock}</span>
                 <span class="emoji">${p.emoji}</span>
-                <b style="font-size:16px">${p.name}</b>
-                <p style="color:var(--p); font-weight:900; margin-top:10px">${p.price.toLocaleString()} đ</p>
+                <h4>${p.name}</h4>
+                <b style="color:var(--accent)">${p.price.toLocaleString()} đ</b>
             </div>
         `).join('');
     }
 
     function addToCart(id) {
-        const p = products.find(x => x.id === id);
+        const p = menu.find(x => x.id === id);
+        if(p.stock <= 0) return Swal.fire('Hết hàng', 'Món này đã tạm hết!', 'error');
         cart.push({...p});
-        updateCart();
-        new Audio('https://www.soundjay.com/buttons/button-21.mp3').play().catch(()=>{});
+        updateCartUI();
     }
 
-    function updateCart() {
-        const total = cart.reduce((s, i) => s + i.price, 0);
-        document.getElementById('cart-items-box').innerHTML = cart.map((i, idx) => `
-            <div class="cart-item">
-                <div><b>${i.name}</b><br><small>${i.price.toLocaleString()} đ</small></div>
-                <i class="fas fa-minus-circle" style="color:var(--danger); cursor:pointer" onclick="removeFromCart(${idx})"></i>
+    function updateCartUI() {
+        const box = document.getElementById('cart-items');
+        box.innerHTML = cart.map((i, idx) => `
+            <div class="bill-item">
+                <div><b>${i.name}</b><br><small>${i.price.toLocaleString()}</small></div>
+                <i class="fas fa-minus-circle" style="color:red; cursor:pointer" onclick="removeFromCart(${idx})"></i>
             </div>
         `).join('');
-        document.getElementById('cart-total').innerText = total.toLocaleString() + ' đ';
+        const total = cart.reduce((s, i) => s + i.price, 0);
+        document.getElementById('total-val').innerText = total.toLocaleString() + ' đ';
     }
 
-    function removeFromCart(idx) {
-        cart.splice(idx, 1);
-        updateCart();
+    function removeFromCart(idx) { cart.splice(idx, 1); updateCartUI(); }
+
+    function setPay(m) {
+        method = m;
+        document.getElementById('m-cash').classList.toggle('active', m === 'Tiền mặt');
+        document.getElementById('m-qr').classList.toggle('active', m === 'Quét QR');
     }
 
-    function setMethod(m) {
-        payMethod = m;
-        document.getElementById('m-cash').style = m === 'Cash' ? 'flex:1; padding:15px; border-radius:15px; border:2px solid var(--p); background:#eef2ff; color:var(--p); font-weight:800;' : 'flex:1; padding:15px; border-radius:15px; border:2px solid #e2e8f0; background:white; font-weight:800;';
-        document.getElementById('m-qr').style = m === 'QR' ? 'flex:1; padding:15px; border-radius:15px; border:2px solid var(--p); background:#eef2ff; color:var(--p); font-weight:800;' : 'flex:1; padding:15px; border-radius:15px; border:2px solid #e2e8f0; background:white; font-weight:800;';
-    }
-
-    function checkout() {
+    function handleCheckout() {
         if(cart.length === 0) return;
         const total = cart.reduce((s, i) => s + i.price, 0);
-        
-        Swal.fire({
-            title: 'LGSHOP CHECKOUT',
-            text: `Thanh toán ${total.toLocaleString()} đ qua ${payMethod === 'Cash' ? 'Tiền mặt' : 'QR Code'}?`,
-            icon: 'info',
-            showCancelButton: true,
-            confirmButtonText: 'XUẤT BILL'
-        }).then(res => {
-            if(res.isConfirmed) {
-                const order = {
-                    id: '#' + Math.random().toString(36).substr(2, 6).toUpperCase(),
-                    total,
-                    method: payMethod,
-                    items: [...cart],
-                    time: new Date().toLocaleTimeString()
-                };
-                
-                cart.forEach(c => {
-                    const p = products.find(x => x.id === c.id);
-                    p.sold++;
-                });
+        const orderId = document.getElementById('order-id').innerText;
 
-                orders.unshift(order);
-                localStorage.setItem('LG_O_v11', JSON.stringify(orders));
-                localStorage.setItem('LG_P_v11', JSON.stringify(products));
-
-                Swal.fire('Thành công', 'Hóa đơn đã được gửi tới hệ thống KDS.', 'success');
-                cart = []; updateCart(); updateStats();
-            }
-        });
+        if(method === 'Quét QR') {
+            Swal.fire({
+                title: 'Quét VietQR',
+                html: `<img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=LGSHOP_${orderId}_${total}" style="border-radius:15px">`,
+                confirmButtonText: 'XÁC NHẬN ĐÃ NHẬN TIỀN'
+            }).then(finalize);
+        } else {
+            finalize();
+        }
     }
 
-    function renderTables() {
-        document.getElementById('table-box').innerHTML = tables.map(t => `
-            <div class="table-btn ${t.busy ? 'active' : ''}" onclick="toggleTable(${t.id})">
-                <i class="fas fa-couch"></i>
-                <b>BÀN ${t.id}</b>
-                <small>${t.busy ? 'CÓ KHÁCH' : 'TRỐNG'}</small>
+    function finalize() {
+        const total = cart.reduce((s, i) => s + i.price, 0);
+        const order = { id: document.getElementById('order-id').innerText, items: [...cart], total, time: new Date().toLocaleTimeString() };
+        
+        // Push to KDS
+        kdsOrders.push({...order, status: 'pending'});
+        // Update Inventory & History
+        cart.forEach(c => { const p = menu.find(x => x.id === c.id); p.stock--; });
+        history.push(order);
+        
+        localStorage.setItem('LGS_H12', JSON.stringify(history));
+        localStorage.setItem('LGS_P12', JSON.stringify(menu));
+
+        Swal.fire('Thành công', 'Đơn đã được đẩy xuống bếp!', 'success');
+        cart = []; updateCartUI(); genID(); updateDisplay(); renderMenu();
+    }
+
+    // --- KDS RENDER ---
+    function renderKDS() {
+        const container = document.getElementById('kds-container');
+        container.innerHTML = kdsOrders.map((o, idx) => `
+            <div class="kds-ticket ${o.status === 'done' ? 'done' : ''}">
+                <div class="ticket-header">
+                    <span>ĐƠN #${o.id}</span>
+                    <span>${o.time}</span>
+                </div>
+                <div>${o.items.map(i => `• ${i.name}`).join('<br>')}</div>
+                <button onclick="finishTicket(${idx})" style="margin-top:15px; width:100%; padding:10px; border-radius:10px; border:none; background:var(--accent); color:white; font-weight:800; cursor:pointer">HOÀN THÀNH</button>
             </div>
         `).join('');
     }
 
-    function toggleTable(id) {
-        const t = tables.find(x => x.id === id);
-        t.busy = !t.busy;
-        renderTables();
+    function finishTicket(idx) {
+        kdsOrders[idx].status = 'done';
+        renderKDS();
     }
 
-    function updateStats() {
-        const rev = orders.reduce((s, o) => s + o.total, 0);
+    // --- DISPLAY HELPER ---
+    function updateDisplay() {
+        const rev = history.reduce((s, o) => s + o.total, 0);
         document.getElementById('st-rev').innerText = rev.toLocaleString() + ' đ';
-        document.getElementById('st-orders').innerText = orders.length + ' Đơn';
-        
-        let hot = products.reduce((prev, current) => (prev.sold > current.sold) ? prev : current);
-        document.getElementById('st-hot').innerText = hot.sold > 0 ? hot.name : '--';
+        document.getElementById('st-count').innerText = history.length;
+    }
+    function genID() { document.getElementById('order-id').innerText = Math.floor(Math.random()*900000 + 100000); }
+    function updateTime() {
+        document.getElementById('clock').innerText = new Date().toLocaleTimeString('vi-VN');
+        document.getElementById('date').innerText = new Date().toLocaleDateString('vi-VN');
     }
 
-    function initChart() {
-        const ctx = document.getElementById('premiumChart').getContext('2d');
-        if(window.lgChart) window.lgChart.destroy();
-        window.lgChart = new Chart(ctx, {
+    function renderChart() {
+        const ctx = document.getElementById('mainChart').getContext('2d');
+        if(window.myChart) window.myChart.destroy();
+        window.myChart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00'],
                 datasets: [{
-                    label: 'Doanh thu (VNĐ)',
-                    data: [200000, 850000, 1500000, 1100000, 2400000, 4200000, 5800000],
-                    borderColor: '#4f46e5',
-                    tension: 0.4, fill: true, backgroundColor: 'rgba(79, 70, 229, 0.1)'
+                    label: 'Doanh thu triệu đồng',
+                    data: [1.2, 2.5, 4.8, 3.2, 5.5, 7.8, 8.2],
+                    borderColor: '#6366f1',
+                    tension: 0.4, fill: true, backgroundColor: 'rgba(99, 102, 241, 0.1)'
                 }]
             },
             options: { maintainAspectRatio: false }
         });
-    }
-
-    function renderOrders() {
-        document.getElementById('order-log-full').innerHTML = orders.map(o => `
-            <div style="background:white; padding:20px; border-radius:15px; display:flex; justify-content:space-between">
-                <div><b>${o.id}</b> | ${o.time}</div>
-                <div style="font-weight:900">${o.total.toLocaleString()} đ <small>(${o.method})</small></div>
-            </div>
-        `).join('');
-    }
-
-    function startTime() {
-        setInterval(() => {
-            document.getElementById('live-clock').innerText = new Date().toLocaleTimeString('vi-VN');
-        }, 1000);
-    }
-
-    function resetSys() {
-        Swal.fire({
-            title: 'ĐÓNG CA LÀM VIỆC?',
-            text: "Toàn bộ dữ liệu hôm nay sẽ được lưu trữ.",
-            icon: 'warning',
-            showCancelButton: true
-        }).then(res => { if(res.isConfirmed) { localStorage.clear(); location.reload(); } });
     }
 
     init();
