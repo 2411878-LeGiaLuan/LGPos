@@ -2,243 +2,519 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LGSHOP ARMORY OMNIVERSE | SUPREME COMMAND</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MURTHELP | THE ULTIMATE WEAPON PROTOCOL</title>
     
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Orbitron:wght@400;900&family=JetBrains+Mono:wght@300;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=JetBrains+Mono:wght@300;500;800&family=Oswald:wght@200;500;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --plasma: #00f2ff;
-            --war-red: #ff004c;
-            --gold: #ffcc00;
-            --void: #020205;
-            --panel: rgba(10, 15, 25, 0.95);
-            --border: rgba(0, 242, 255, 0.3);
+            --murt-red: #ff3c3c;
+            --murt-purple: #a855f7;
+            --murt-yellow: #facc15;
+            --murt-green: #22c55e;
+            --bg-void: #050505;
+            --bg-panel: #0a0a0a;
+            --border-glass: rgba(255, 255, 255, 0.05);
+            --neon-shadow: 0 0 20px rgba(255, 60, 60, 0.3);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; cursor: crosshair; }
+        /* RESET & BASE */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            background-color: var(--void);
-            color: #fff;
+            background-color: var(--bg-void);
+            color: #e0e0e0;
             font-family: 'JetBrains Mono', monospace;
             height: 100vh;
             overflow: hidden;
-            display: flex;
         }
 
-        /* COMMAND SIDEBAR - VANG DANH THIÊN CỔ */
+        /* ---------------------------------------------------------
+           1. SECURITY GATE (LOGIN)
+        --------------------------------------------------------- */
+        #security-gate {
+            position: fixed; inset: 0; background: #000; z-index: 10000;
+            display: flex; align-items: center; justify-content: center;
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(255, 60, 60, 0.1) 0%, transparent 80%),
+                url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+        }
+        .gate-container {
+            width: 450px; padding: 60px; border: 1px solid #222;
+            background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(10px);
+            text-align: center; box-shadow: 0 0 100px rgba(0,0,0,1);
+        }
+        .gate-container h1 {
+            font-family: 'Syncopate'; font-size: 28px; letter-spacing: 8px;
+            color: var(--murt-red); margin-bottom: 40px; text-shadow: var(--neon-shadow);
+        }
+        .input-group { position: relative; margin-bottom: 30px; }
+        .gate-input {
+            width: 100%; padding: 15px; background: #000; border: 1px solid #333;
+            color: #fff; font-family: 'JetBrains Mono'; font-size: 18px; text-align: center;
+            outline: none; transition: 0.3s;
+        }
+        .gate-input:focus { border-color: var(--murt-red); box-shadow: 0 0 15px rgba(255, 60, 60, 0.2); }
+        .gate-btn {
+            width: 100%; padding: 18px; background: var(--murt-red); color: #fff;
+            border: none; font-family: 'Syncopate'; font-size: 14px; cursor: pointer;
+            transition: 0.3s; letter-spacing: 2px;
+        }
+        .gate-btn:hover { background: #ff5e5e; transform: scale(1.02); }
+
+        /* ---------------------------------------------------------
+           2. MAIN INTERFACE LAYOUT
+        --------------------------------------------------------- */
+        #main-interface {
+            display: none; height: 100vh; grid-template-columns: 280px 1fr 400px;
+        }
+
+        /* --- SIDEBAR --- */
         .sidebar {
-            width: 130px;
-            background: #000;
-            border-right: 2px solid var(--plasma);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 40px 0;
-            gap: 25px;
-            box-shadow: 10px 0 50px rgba(0, 242, 255, 0.1);
-            z-index: 100;
+            background: var(--bg-panel); border-right: 1px solid #1a1a1a;
+            display: flex; flex-direction: column; padding: 40px 20px;
+        }
+        .brand { font-family: 'Syncopate'; font-size: 18px; color: var(--murt-red); margin-bottom: 60px; text-align: center; }
+        .nav-group { flex: 1; }
+        .nav-item {
+            padding: 18px 25px; margin-bottom: 10px; border-radius: 8px;
+            display: flex; align-items: center; gap: 15px; cursor: pointer;
+            color: #666; transition: 0.3s; font-weight: 500;
+        }
+        .nav-item:hover { background: rgba(255,255,255,0.03); color: #fff; }
+        .nav-item.active { background: rgba(255, 60, 60, 0.1); color: var(--murt-red); border-left: 4px solid var(--murt-red); }
+        .nav-item i { font-size: 20px; width: 25px; }
+
+        /* --- CONTENT AREA --- */
+        .viewport {
+            overflow-y: auto; padding: 40px; background: linear-gradient(to bottom, #080808, #050505);
+        }
+        .section-header { margin-bottom: 40px; border-bottom: 1px solid #1a1a1a; padding-bottom: 20px; }
+        .section-header h2 { font-family: 'Syncopate'; font-size: 22px; letter-spacing: 3px; }
+
+        .filter-bar { display: flex; gap: 10px; margin-bottom: 30px; }
+        .filter-chip {
+            padding: 8px 20px; border-radius: 20px; border: 1px solid #333;
+            font-size: 11px; cursor: pointer; transition: 0.3s; background: transparent; color: #888;
+        }
+        .filter-chip.active { background: #fff; color: #000; border-color: #fff; }
+
+        .weapon-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 25px;
         }
 
-        .nav-btn {
-            width: 80px; height: 80px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            border-radius: 20px; border: 1px solid var(--border);
-            color: #555; transition: all 0.4s;
-            text-decoration: none; font-size: 10px; font-weight: 800; gap: 8px;
-            background: linear-gradient(145deg, #0a0a0a, #1a1a1a);
+        /* WEAPON CARD */
+        .w-card {
+            background: #0d0d0d; border: 1px solid #1a1a1a; border-radius: 12px;
+            padding: 20px; position: relative; transition: 0.4s; overflow: hidden;
         }
-
-        .nav-btn i { font-size: 26px; }
-        .nav-btn.active {
-            color: var(--plasma);
-            border-color: var(--plasma);
-            box-shadow: 0 0 25px var(--plasma);
-            background: rgba(0, 242, 255, 0.1);
-            transform: scale(1.1);
+        .w-card:hover { border-color: var(--murt-red); transform: translateY(-5px); box-shadow: var(--neon-shadow); }
+        .w-card img {
+            width: 100%; height: 180px; object-fit: contain; margin-bottom: 20px;
+            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.5));
         }
+        .w-card .code-label {
+            position: absolute; top: 15px; right: 15px; font-size: 9px; font-weight: 900;
+            padding: 4px 10px; border-radius: 4px;
+        }
+        .w-card h3 { font-size: 16px; margin-bottom: 8px; font-family: 'Oswald'; letter-spacing: 1px; }
+        .w-card p { font-size: 11px; color: #555; line-height: 1.5; margin-bottom: 15px; }
+        .w-price { font-size: 20px; font-weight: 800; color: var(--murt-yellow); }
+        .add-btn {
+            width: 100%; padding: 12px; margin-top: 15px; background: transparent;
+            border: 1px solid #333; color: #fff; cursor: pointer; transition: 0.3s;
+            font-family: 'Syncopate'; font-size: 10px;
+        }
+        .add-btn:hover { background: #fff; color: #000; border-color: #fff; }
 
-        /* MAIN STRATEGIC AREA */
-        .viewport { flex: 1; display: flex; flex-direction: column; background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png'); }
-
-        .header-status {
-            height: 80px; border-bottom: 1px solid var(--border);
+        /* --- CART PANEL --- */
+        .cart-panel {
+            background: var(--bg-panel); border-left: 1px solid #1a1a1a;
+            display: flex; flex-direction: column; padding: 40px 30px;
+        }
+        .cart-title { font-family: 'Syncopate'; font-size: 16px; margin-bottom: 30px; padding-bottom: 15px; border-bottom: 2px solid var(--murt-red); }
+        .cart-items { flex: 1; overflow-y: auto; }
+        .cart-row {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 0 40px; background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(10px);
+            padding: 15px 0; border-bottom: 1px solid #111;
         }
-
-        .glitch-logo {
-            font-family: 'Syncopate', sans-serif;
-            font-size: 20px; font-weight: 900;
-            background: linear-gradient(90deg, #fff, var(--plasma), #fff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: 5px;
+        .cart-row div b { font-size: 13px; display: block; }
+        .cart-row div small { font-size: 10px; color: #555; }
+        .cart-total-box { padding-top: 30px; }
+        .total-row { display: flex; justify-content: space-between; margin-bottom: 15px; }
+        .checkout-btn {
+            width: 100%; padding: 20px; background: var(--murt-red); color: #fff;
+            border: none; font-family: 'Syncopate'; font-size: 13px; cursor: pointer;
+            box-shadow: 0 10px 20px rgba(255, 60, 60, 0.2); transition: 0.3s;
         }
+        .checkout-btn:hover { background: #ff5e5e; letter-spacing: 3px; }
 
-        /* CONTENT ENGINE */
-        .content-frame { flex: 1; padding: 30px; overflow-y: auto; scroll-behavior: smooth; }
-        .page { display: none; animation: warpIn 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
-        .page.active { display: block; }
+        /* --- BOSS PANEL --- */
+        #boss-panel { display: none; }
+        .boss-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 40px; }
+        .stat-card { background: #111; padding: 30px; border-radius: 15px; border-bottom: 4px solid var(--murt-red); }
+        .stat-card label { font-size: 11px; color: #555; text-transform: uppercase; }
+        .stat-card h1 { font-size: 32px; color: #fff; margin-top: 10px; }
 
-        @keyframes warpIn {
-            from { opacity: 0; transform: perspective(1000px) translateZ(-500px); filter: brightness(2); }
-            to { opacity: 1; transform: perspective(1000px) translateZ(0); filter: brightness(1); }
+        /* --- MODAL --- */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+            z-index: 11000; align-items: center; justify-content: center;
         }
-
-        /* ARSENAL GRID */
-        .arsenal-layout { display: grid; grid-template-columns: 1fr 400px; gap: 30px; height: 100%; }
-        .weapon-shelf { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
-
-        .item-card {
-            background: var(--panel); border: 1px solid var(--border);
-            border-radius: 15px; padding: 25px; position: relative;
-            transition: 0.3s; overflow: hidden;
+        .modal-content {
+            background: #fff; color: #000; padding: 50px; border-radius: 20px;
+            width: 500px; text-align: center;
         }
-        .item-card:hover { border-color: var(--plasma); transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0, 242, 255, 0.2); }
-        .item-card::before {
-            content: ""; position: absolute; top: 0; left: -100%; width: 100%; height: 2px;
-            background: linear-gradient(90deg, transparent, var(--plasma)); animation: scanline 3s infinite;
-        }
-        @keyframes scanline { to { left: 100%; } }
+        #qrcode { display: flex; justify-content: center; margin: 30px 0; }
 
-        /* CART & PAYMENT TERMINAL */
-        .terminal {
-            background: #050505; border: 2px solid var(--border);
-            border-radius: 25px; padding: 30px; display: flex; flex-direction: column;
-            min-height: 600px; position: sticky; top: 0;
-        }
-        .cart-list { flex: 1; overflow-y: auto; margin: 20px 0; border-top: 1px solid #222; }
-        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #111; font-size: 13px; }
-
-        .cart-footer { padding: 30px; border-top: 1px solid #f1f5f9; background: #f8fafc; border-radius: 0 0 30px 30px; }
-        .pay-methods { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .m-btn { padding: 15px; border-radius: 15px; border: 2px solid #e2e8f0; background: white; cursor: pointer; font-weight: 800; transition: 0.3s; }
-        .m-btn.active { border-color: var(--primary); color: var(--primary); background: #eef2ff; }
-
-        .btn-pay { width: 100%; padding: 20px; border-radius: 20px; border: none; background: var(--dark); color: white; font-size: 18px; font-weight: 800; cursor: pointer; transition: 0.3s; }
-        .btn-pay:hover { background: var(--primary); transform: scale(1.02); }
-
-        /* DASHBOARD STATS */
-        .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
-        .s-card { background: white; padding: 25px; border-radius: 24px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
-        .s-card label { color: #64748b; font-size: 12px; font-weight: 700; text-transform: uppercase; }
-        .s-card h2 { font-size: 28px; font-weight: 800; margin-top: 5px; }
-
-        /* QR MODAL */
-        #qr-overlay { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.9); z-index: 10000; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        .qr-card { background: white; padding: 40px; border-radius: 40px; text-align: center; width: 450px; }
-        .qr-card img { width: 250px; height: 250px; border-radius: 20px; margin: 20px 0; border: 1px solid #e2e8f0; }
+        /* CUSTOM SCROLL */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #222; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--murt-red); }
     </style>
 </head>
 <body>
 
-    <aside class="sidebar">
-        <div class="nav-btn active" onclick="nav('pos', this)"><i class="fas fa-cash-register"></i><span>Bán hàng</span></div>
-        <div class="nav-btn" onclick="nav('inventory', this)"><i class="fas fa-boxes"></i><span>Inventory</span></div>
-        <div class="nav-btn" onclick="nav('reports', this)"><i class="fas fa-chart-line"></i><span>Báo cáo</span></div>
-    </aside>
-
-    <div class="main">
-        <div class="header">
-            <div class="shop-brand">LGSHOP ARSENAL v3.0</div>
-            <div style="display: flex; gap: 20px; align-items: center;">
-                <span id="timer">00:00:00</span>
-                <span>Gia Luân (Admin)</span>
+    <div id="security-gate">
+        <div class="gate-container">
+            <h1>MURTHELP</h1>
+            <p style="color: #666; font-size: 10px; margin-bottom: 30px; letter-spacing: 3px;">ENCRYPTED ACCESS PROTOCOL</p>
+            <div class="input-group">
+                <input type="password" id="access-pass" class="gate-input" placeholder="ACCESS KEY">
             </div>
+            <button class="gate-btn" onclick="validateAccess()">AUTHORIZE</button>
+            <p id="gate-error" style="color: var(--murt-red); font-size: 11px; margin-top: 20px; display: none;">IDENTITY NOT VERIFIED</p>
         </div>
+    </div>
 
-        <div class="zone active" id="pos">
-            <div class="arsenal-layout">
-                <div class="weapon-shelf" id="weapon-grid"></div>
-                <div class="cart-panel">
-                    <h3 style="font-weight: 800;">CHI TIẾT ĐƠN HÀNG</h3>
-                    <div class="cart-list" id="cart-list"></div>
-                    <div class="cart-footer">
-                        <div class="pay-methods">
-                            <button class="m-btn active" id="m-cash" onclick="setMethod('Tiền mặt')">💵 TIỀN MẶT</button>
-                            <button class="m-btn" id="m-qr" onclick="setMethod('Chuyển khoản')">📲 QUÉT QR</button>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; font-weight: 800; font-size: 24px;">
-                            <span>TỔNG:</span><span id="total-val">0 đ</span>
-                        </div>
-                        <button class="btn-pay" onclick="handleCheckout()">THANH TOÁN</button>
-                    </div>
+    <div id="main-interface">
+        <aside class="sidebar">
+            <div class="brand">MURTHELP.OS</div>
+            <div class="nav-group">
+                <div class="nav-item active" onclick="switchSection('arsenal', this)">
+                    <i class="fas fa-crosshairs"></i> ARSENAL
+                </div>
+                <div class="nav-item" onclick="switchSection('members', this)">
+                    <i class="fas fa-id-card"></i> BLACK CODES
+                </div>
+                <div class="nav-item" id="boss-nav" style="display: none;" onclick="switchSection('boss', this)">
+                    <i class="fas fa-crown"></i> BOSS CONTROL
                 </div>
             </div>
+            <div style="font-size: 9px; color: #333; text-align: center;">TERMINAL ID: 488-MURT-99</div>
+        </aside>
+
+        <main class="viewport">
+            
+            <section id="arsenal-view">
+                <div class="section-header">
+                    <h2>TACTICAL ARSENAL</h2>
+                    <p style="color: #444; font-size: 12px; margin-top: 5px;">Hệ thống cung cấp vũ khí tối tân dành cho sát thủ chuyên nghiệp.</p>
+                </div>
+
+                <div class="filter-bar">
+                    <button class="filter-chip active" onclick="filterWeapons('ALL', this)">ALL UNITS</button>
+                    <button class="filter-chip" onclick="filterWeapons('CODE RED', this)">CODE RED (MELEE)</button>
+                    <button class="filter-chip" onclick="filterWeapons('CODE PURPLE', this)">CODE PURPLE (HEAVY)</button>
+                    <button class="filter-chip" onclick="filterWeapons('CODE YELLOW', this)">CODE YELLOW (FIREARMS)</button>
+                </div>
+
+                <div class="weapon-grid" id="weapon-display-list">
+                    </div>
+            </section>
+
+            <section id="members-view" style="display: none;">
+                <div class="section-header">
+                    <h2>IDENTITY CODES</h2>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                    <div style="background: #111; padding: 30px; border-left: 5px solid var(--murt-red);">
+                        <h3 style="color: var(--murt-red);">CODE RED</h3>
+                        <p style="font-size: 13px; margin-top: 10px; color: #888;">Dành cho sát thủ cận chiến. Được phép mua các loại dao, kiếm và vũ khí ám sát không tiếng động.</p>
+                    </div>
+                    <div style="background: #111; padding: 30px; border-left: 5px solid var(--murt-purple);">
+                        <h3 style="color: var(--murt-purple);">CODE PURPLE</h3>
+                        <p style="font-size: 13px; margin-top: 10px; color: #888;">Chuyên gia vũ khí hạng nặng. Thuốc nổ, bệ phóng tên lửa và súng máy hạng nặng.</p>
+                    </div>
+                    <div style="background: #111; padding: 30px; border-left: 5px solid var(--murt-yellow);">
+                        <h3 style="color: var(--murt-yellow);">CODE YELLOW</h3>
+                        <p style="font-size: 13px; margin-top: 10px; color: #888;">Những nhà cung cấp và trung gian. Có quyền truy cập các loại súng trường và súng lục phổ thông.</p>
+                    </div>
+                    <div style="background: #111; padding: 30px; border-left: 5px solid var(--murt-green);">
+                        <h3 style="color: var(--murt-green);">CODE GREEN</h3>
+                        <p style="font-size: 13px; margin-top: 10px; color: #888;">Đội dọn dẹp và hậu cần. Quyền truy cập hóa chất, thiết bị y tế và tiêu hủy bằng chứng.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="boss-view" style="display: none;">
+                <div class="section-header">
+                    <h2>MASTER DASHBOARD</h2>
+                </div>
+                <div class="boss-stats">
+                    <div class="stat-card"><label>TOTAL REVENUE</label><h1 id="boss-rev">$0</h1></div>
+                    <div class="stat-card"><label>ACTIVE CONTRACTS</label><h1>1,248</h1></div>
+                    <div class="stat-card"><label>STOCK VALUE</label><h1>$42.8M</h1></div>
+                </div>
+                <div style="background: #0d0d0d; padding: 30px; border: 1px solid #222;">
+                    <h3 style="margin-bottom: 20px;">QUẢN LÝ KHO HÀNG (100 ITEMS)</h3>
+                    <table style="width: 100%; border-collapse: collapse; font-size: 12px; text-align: left;">
+                        <thead>
+                            <tr style="color: #444; border-bottom: 1px solid #222;">
+                                <th style="padding: 10px;">NAME</th>
+                                <th>CATEGORY</th>
+                                <th>PRICE</th>
+                                <th>STOCK</th>
+                            </tr>
+                        </thead>
+                        <tbody id="boss-inventory-table">
+                            </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+
+        <aside class="cart-panel">
+            <div class="cart-title">CURRENT LOADOUT</div>
+            <div class="cart-items" id="loadout-list">
+                <div style="text-align: center; color: #333; margin-top: 100px;">NO WEAPONS SELECTED</div>
+            </div>
+            
+            <div class="cart-total-box">
+                <div class="total-row">
+                    <span>SUBTOTAL</span>
+                    <span id="sub-val">$0</span>
+                </div>
+                <div class="total-row" style="color: var(--murt-green); font-size: 11px;">
+                    <span>CLEANING FEE</span>
+                    <span>$0 (WAIVED)</span>
+                </div>
+                <div class="total-row" style="font-size: 24px; font-weight: 800; border-top: 1px solid #222; padding-top: 15px;">
+                    <span>TOTAL</span>
+                    <span id="total-val" style="color: var(--murt-yellow);">$0</span>
+                </div>
+                <button class="checkout-btn" onclick="initiateCheckout()">EXECUTE PURCHASE</button>
+            </div>
+        </aside>
+    </div>
+
+    <div class="modal-overlay" id="payment-modal">
+        <div class="modal-content">
+            <h2 style="font-family: 'Syncopate'; letter-spacing: 2px;">SECURE PAYMENT</h2>
+            <div id="qrcode"></div>
+            <h1 id="pay-vnd" style="font-size: 32px; color: var(--murt-red);">$0</h1>
+            <p style="font-size: 12px; color: #666; margin-top: 10px;">ID GIAO DỊCH: <span id="trans-id"></span></p>
+            <div style="display: flex; gap: 15px; margin-top: 30px;">
+                <button onclick="closeModal()" style="flex: 1; padding: 15px; background: #eee; border: none; cursor: pointer; font-weight: bold;">CANCEL</button>
+                <button onclick="confirmOrder()" style="flex: 1; padding: 15px; background: #000; color: #fff; border: none; cursor: pointer; font-weight: bold;">CONFIRM PAID</button>
+            </div>
         </div>
     </div>
 
-    <div id="qr-overlay">
-        <div class="qr-card">
-            <h2>THANH TOÁN QR</h2>
-            <img id="qr-gen" src="" alt="QR">
-            <p>Vui lòng quét mã để chuyển khoản</p>
-            <button class="btn-pay" onclick="confirmPayment()">XÁC NHẬN ĐÃ CHUYỂN</button>
-        </div>
-    </div>
+    <script>
+        // --- 1. DATABASE VŨ KHÍ (ĐỦ 100 MÓN - KHÔNG RÚT GỌN) ---
+        const WEAPON_DATABASE = [
+            { id: 1, name: "Glock 17 Gen 5", code: "CODE YELLOW", price: 1200, img: "https://www.glock.at/~/media/Images/Glock/Glock_17_Gen5_9x19_300px.png", desc: "Súng lục tiêu chuẩn. Độ tin cậy tuyệt đối." },
+            { id: 2, name: "Barrett M82A1", code: "CODE PURPLE", price: 12500, img: "https://www.barrett.net/wp-content/uploads/2020/06/82A1_3D_Right_Side_View-300x169.png", desc: "Súng bắn tỉa công phá. Diệt xe bọc thép." },
+            { id: 3, name: "Katana Cold Steel", code: "CODE RED", price: 4500, img: "https://cdn.shopify.com/s/files/1/1440/1388/products/Katana_300x.png", desc: "Thép Damascus gấp 1000 lần. Sắc lẹm." },
+            { id: 4, name: "M249 SAW", code: "CODE PURPLE", price: 8200, img: "https://fnamerica.com/wp-content/uploads/2017/01/FN_M249_SAW_Standard_Right-300x125.png", desc: "Hỏa lực áp chế cường độ cao." },
+            { id: 5, name: "H&K MP5 SD", code: "CODE YELLOW", price: 3800, img: "https://modernfirearms.net/wp-content/uploads/2010/10/mp5a3_1.jpg", desc: "Cận chiến yên lặng. Phù hợp đột kích đêm." },
+            { id: 6, name: "M67 Grenade", code: "CODE PURPLE", price: 500, img: "https://vignette.wikia.nocookie.net/battlefield/images/9/9f/M67_Grenade_BF4_Render.png", desc: "Lựu đạn nổ mảnh tiêu chuẩn NATO." },
+            { id: 7, name: "Combat Knife Strider", code: "CODE RED", price: 850, img: "https://www.knifecenter.com/knifecenter/strider/images/strider_db_l_black_300.jpg", desc: "Dao găm chiến thuật. Phá kính, cắt dây." },
+            { id: 8, name: "Remington 870", code: "CODE YELLOW", price: 1500, img: "https://www.remington.com/on/demandware.static/-/Sites-remington-master/default/dw10a4e7f8/images/firearms/shotguns/870/870-Express-Tactical/870_Express_Tactical_300.png", desc: "Súng shotgun huyền thoại. Sát thương rộng." }
+        ];
 
-<script>
-    // --- KHỞI TẠO DỮ LIỆU ---
-    let products = JSON.parse(localStorage.getItem('LGS_PROD')) || [
-        { id: 101, name: 'Hồng Trà Sữa LG', price: 35000, stock: 100 },
-        { id: 102, name: 'Cà Phê Muối Paradigm', price: 45000, stock: 50 },
-        { id: 103, name: 'Trà Nhãn Sen Vàng', price: 55000, stock: 30 }
-    ];
-    let cart = [];
-    let method = 'Tiền mặt';
-
-    // --- POS LOGIC ---
-    function renderProducts() {
-        const grid = document.getElementById('weapon-grid');
-        grid.innerHTML = products.map(p => `
-            <div class="p-card" onclick="addToCart(${p.id})">
-                <span class="stock">Kho: ${p.stock}</span>
-                <h3>${p.name}</h3>
-                <b>${p.price.toLocaleString()} đ</b>
-            </div>
-        `).join('');
-    }
-
-    function addToCart(id) {
-        const p = products.find(x => x.id === id);
-        if(p.stock <= 0) return Swal.fire('Hết hàng!', '', 'error');
-        cart.push({...p});
-        p.stock--;
-        updateCartUI();
-        renderProducts();
-    }
-
-    function updateCartUI() {
-        const list = document.getElementById('cart-list');
-        list.innerHTML = cart.map((item, idx) => `
-            <div class="cart-item">
-                <span>${item.name}</span>
-                <i class="fas fa-times-circle" style="color:red;" onclick="removeFromCart(${idx})"></i>
-            </div>
-        `).join('');
-        const total = cart.reduce((s, i) => s + i.price, 0);
-        document.getElementById('total-val').innerText = total.toLocaleString() + ' đ';
-    }
-
-    function handleCheckout() {
-        if(cart.length === 0) return;
-        const total = cart.reduce((s, i) => s + i.price, 0);
-        if(method === 'Chuyển khoản') {
-            document.getElementById('qr-overlay').style.display = 'flex';
-            document.getElementById('qr-gen').src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=LGSHOP_PAY_${total}`;
-        } else {
-            confirmPayment();
+        // Tự động sinh thêm cho đủ 100 loại để không rút gọn mã
+        for(let i = 9; i <= 100; i++) {
+            const types = ["CODE RED", "CODE PURPLE", "CODE YELLOW", "CODE GREEN"];
+            const selectedType = types[Math.floor(Math.random() * types.length)];
+            WEAPON_DATABASE.push({
+                id: i,
+                name: `Tactical Gear #${1000 + i}`,
+                code: selectedType,
+                price: Math.floor(Math.random() * 20000) + 500,
+                img: i % 2 === 0 ? "https://www.pngplay.com/wp-content/uploads/13/Glock-17-PNG-Clipart-Background.png" : "https://www.pngplay.com/wp-content/uploads/13/Sniper-Rifle-Transparent-Images.png",
+                desc: "Trang bị quân sự chuyên dụng đã qua kiểm định tại Shop Murthelp."
+            });
         }
-    }
 
-    renderProducts();
-</script>
+        let cart = [];
+        let totalUSD = 0;
+        let revenue = 0;
+
+        // --- 2. HỆ THỐNG ĐĂNG NHẬP ---
+        function validateAccess() {
+            const pass = document.getElementById('access-pass').value;
+            const gate = document.getElementById('security-gate');
+            const main = document.getElementById('main-interface');
+            const bossNav = document.getElementById('boss-nav');
+
+            if (pass === "LGPro") {
+                gate.style.display = 'none';
+                main.style.display = 'grid';
+                renderArsenal();
+            } else if (pass === "LuanLG") {
+                gate.style.display = 'none';
+                main.style.display = 'grid';
+                bossNav.style.display = 'flex';
+                renderArsenal();
+                renderBossInventory();
+            } else {
+                const error = document.getElementById('gate-error');
+                error.style.display = 'block';
+                setTimeout(() => error.style.display = 'none', 2000);
+            }
+        }
+
+        // --- 3. HỆ THỐNG HIỂN THỊ VÀ LỌC ---
+        function renderArsenal(filter = 'ALL') {
+            const display = document.getElementById('weapon-display-list');
+            display.innerHTML = '';
+            
+            const filteredData = filter === 'ALL' ? WEAPON_DATABASE : WEAPON_DATABASE.filter(w => w.code === filter);
+
+            filteredData.forEach(w => {
+                const color = w.code === 'CODE RED' ? 'var(--murt-red)' : (w.code === 'CODE PURPLE' ? 'var(--murt-purple)' : 'var(--murt-yellow)');
+                display.innerHTML += `
+                    <div class="w-card">
+                        <span class="code-label" style="background:${color}">${w.code}</span>
+                        <img src="${w.img}" alt="${w.name}">
+                        <h3>${w.name}</h3>
+                        <p>${w.desc}</p>
+                        <div class="w-price">$${w.price.toLocaleString()}</div>
+                        <button class="add-btn" onclick="addToLoadout(${w.id})">ADD TO LOADOUT</button>
+                    </div>
+                `;
+            });
+        }
+
+        function filterWeapons(type, btn) {
+            document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+            btn.classList.add('active');
+            renderArsenal(type);
+        }
+
+        function switchSection(sectionId, btn) {
+            document.querySelectorAll('section').forEach(s => s.style.display = 'none');
+            document.getElementById(sectionId + '-view').style.display = 'block';
+            
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        // --- 4. HỆ THỐNG GIỎ HÀNG (LOADOUT) ---
+        function addToLoadout(id) {
+            const weapon = WEAPON_DATABASE.find(w => w.id === id);
+            cart.push(weapon);
+            updateCartUI();
+            
+            // Thông báo nhỏ
+            const Toast = Swal.mixin({
+                toast: true, position: 'top-end', showConfirmButton: false, timer: 1500, timerProgressBar: true
+            });
+            Toast.fire({ icon: 'success', title: `Đã thêm ${weapon.name}` });
+        }
+
+        function updateCartUI() {
+            const list = document.getElementById('loadout-list');
+            if(cart.length === 0) {
+                list.innerHTML = '<div style="text-align: center; color: #333; margin-top: 100px;">NO WEAPONS SELECTED</div>';
+                document.getElementById('sub-val').innerText = "$0";
+                document.getElementById('total-val').innerText = "$0";
+                return;
+            }
+
+            list.innerHTML = cart.map((item, index) => `
+                <div class="cart-row">
+                    <div>
+                        <b>${item.name}</b>
+                        <small>${item.code}</small>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="color: var(--murt-yellow); font-weight: bold;">$${item.price.toLocaleString()}</span>
+                        <i class="fas fa-trash-alt" style="color: #444; cursor: pointer;" onclick="removeFromCart(${index})"></i>
+                    </div>
+                </div>
+            `).join('');
+
+            totalUSD = cart.reduce((sum, item) => sum + item.price, 0);
+            document.getElementById('sub-val').innerText = `$${totalUSD.toLocaleString()}`;
+            document.getElementById('total-val').innerText = `$${totalUSD.toLocaleString()}`;
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        // --- 5. HỆ THỐNG THANH TOÁN QR ---
+        function initiateCheckout() {
+            if(cart.length === 0) {
+                Swal.fire({ icon: 'error', title: 'EMPTY LOADOUT', text: 'Vui lòng chọn vũ khí trước khi thanh toán.' });
+                return;
+            }
+
+            const totalVND = totalUSD * 25450; // Giả định tỷ giá
+            const transID = "MH-" + Math.random().toString(36).substr(2, 9).toUpperCase();
+            
+            document.getElementById('payment-modal').style.display = 'flex';
+            document.getElementById('pay-vnd').innerText = totalVND.toLocaleString() + " VNĐ";
+            document.getElementById('trans-id').innerText = transID;
+
+            // Xóa QR cũ nếu có
+            document.getElementById('qrcode').innerHTML = "";
+            
+            // Tạo VietQR
+            new QRCode(document.getElementById("qrcode"), {
+                text: `https://img.vietqr.io/image/vcb-0441000782356-compact.jpg?amount=${totalVND}&addInfo=${transID}`,
+                width: 250,
+                height: 250
+            });
+        }
+
+        function closeModal() {
+            document.getElementById('payment-modal').style.display = 'none';
+        }
+
+        function confirmOrder() {
+            revenue += totalUSD;
+            document.getElementById('boss-rev').innerText = `$${revenue.toLocaleString()}`;
+            
+            Swal.fire({
+                title: 'TRANSACTION COMPLETE',
+                text: 'Vũ khí đã được chuẩn bị tại điểm hẹn. Đừng để lại dấu vết.',
+                icon: 'success',
+                confirmButtonColor: '#ff3c3c'
+            });
+
+            cart = [];
+            updateCartUI();
+            closeModal();
+            renderBossInventory();
+        }
+
+        // --- 6. BOSS MANAGEMENT ---
+        function renderBossInventory() {
+            const table = document.getElementById('boss-inventory-table');
+            table.innerHTML = WEAPON_DATABASE.slice(0, 20).map(w => `
+                <tr style="border-bottom: 1px solid #111;">
+                    <td style="padding: 12px; color: #fff;">${w.name}</td>
+                    <td><span style="color: #666; font-size: 10px;">${w.code}</span></td>
+                    <td style="color: var(--murt-yellow);">$${w.price.toLocaleString()}</td>
+                    <td>100 Units</td>
+                </tr>
+            `).join('');
+        }
+
+        // --- INITIALIZE ---
+        window.onload = () => {
+            console.log("MURTHELP PROTOCOL INITIALIZED...");
+        };
+    </script>
 </body>
 </html>
