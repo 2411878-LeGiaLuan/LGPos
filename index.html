@@ -1,1 +1,401 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LGSHOP ARMORY OMNIVERSE v99.0</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=JetBrains+Mono:wght@300;500;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --war-black: #05070a;
+            --army-green: #4d7c0f;
+            --cyber-gold: #fbbf24;
+            --blood-red: #ef4444;
+            --plasma-blue: #06b6d4;
+            --glass: rgba(255, 255, 255, 0.02);
+            --neon-glow: 0 0 15px rgba(6, 182, 212, 0.4);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; cursor: crosshair; }
+        body {
+            background: radial-gradient(circle at center, #111827 0%, var(--war-black) 100%);
+            color: #e5e7eb;
+            font-family: 'JetBrains Mono', monospace;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+        }
+
+        /* SIDEBAR: COMMAND CENTER */
+        .command-sidebar {
+            width: 120px;
+            background: rgba(0,0,0,0.8);
+            border-right: 2px solid var(--plasma-blue);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 0;
+            gap: 30px;
+            z-index: 1000;
+            box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+        }
+
+        .cmd-icon {
+            width: 70px; height: 70px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            border-radius: 15px; background: var(--glass);
+            color: #4b5563; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255,255,255,0.05);
+            text-decoration: none; font-size: 10px; font-weight: 800; gap: 5px;
+        }
+
+        .cmd-icon i { font-size: 24px; }
+        .cmd-icon.active {
+            color: var(--plasma-blue);
+            border-color: var(--plasma-blue);
+            box-shadow: var(--neon-glow);
+            background: rgba(6, 182, 212, 0.1);
+            transform: scale(1.1);
+        }
+
+        /* MAIN BATTLEFIELD */
+        .battlefield { flex: 1; display: flex; flex-direction: column; position: relative; }
+
+        .war-header {
+            height: 100px;
+            background: linear-gradient(to right, rgba(6, 182, 212, 0.05), transparent);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 40px; border-bottom: 1px solid rgba(6, 182, 212, 0.2);
+        }
+
+        .title-glitch {
+            font-family: 'Syncopate', sans-serif;
+            font-size: 22px; font-weight: 900;
+            letter-spacing: 8px; color: var(--plasma-blue);
+            text-shadow: 2px 2px var(--blood-red);
+        }
+
+        /* PAGE ENGINE */
+        .theatre-of-war { flex: 1; padding: 40px; overflow-y: auto; perspective: 1000px; }
+        .zone { display: none; animation: zoneIn 0.8s forwards; }
+        .zone.active { display: block; }
+
+        @keyframes zoneIn {
+            from { opacity: 0; transform: rotateX(-15deg) translateY(50px); filter: blur(10px); }
+            to { opacity: 1; transform: rotateX(0) translateY(0); filter: blur(0); }
+        }
+
+        /* ARSENAL GRID */
+        .arsenal-grid { display: grid; grid-template-columns: 1fr 450px; gap: 40px; height: 100%; }
+        .weapon-catalog { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+
+        .weapon-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px; padding: 30px;
+            position: relative; overflow: hidden;
+            transition: 0.3s;
+        }
+        .weapon-card:hover {
+            border-color: var(--plasma-blue);
+            background: rgba(6, 182, 212, 0.05);
+            transform: translateY(-5px);
+        }
+        .weapon-card::after {
+            content: "TOP SECRET"; position: absolute; top: 10px; right: -30px;
+            background: var(--blood-red); color: white; padding: 5px 40px;
+            font-size: 8px; transform: rotate(45deg); font-weight: 900;
+        }
+
+        .weapon-stats { margin: 15px 0; font-size: 11px; color: #6b7280; }
+        .stat-bar { height: 4px; background: #1f2937; border-radius: 2px; margin-top: 5px; overflow: hidden; }
+        .stat-fill { height: 100%; background: var(--plasma-blue); }
+
+        /* CART: LOADOUT CONFIGURATOR */
+        .loadout-panel {
+            background: rgba(0,0,0,0.5); border: 1px solid var(--plasma-blue);
+            border-radius: 30px; padding: 35px; display: flex; flex-direction: column;
+            backdrop-filter: blur(20px);
+        }
+
+        .btn-fire {
+            width: 100%; padding: 25px; border-radius: 15px; border: none;
+            background: linear-gradient(135deg, var(--plasma-blue), var(--secondary-neon, #7c3aed));
+            color: white; font-family: 'Syncopate'; font-weight: 900;
+            cursor: pointer; transition: 0.3s; margin-top: 20px;
+            box-shadow: 0 10px 20px rgba(6, 182, 212, 0.3);
+        }
+        .btn-fire:hover { transform: scale(1.02); box-shadow: 0 15px 30px rgba(6, 182, 212, 0.5); }
+
+        /* VIP: WARLORDS TABLE */
+        .warlord-card {
+            background: linear-gradient(135deg, #111827, #000);
+            border: 1px solid var(--cyber-gold); padding: 40px;
+            border-radius: 30px; display: flex; align-items: center; gap: 30px;
+            margin-bottom: 25px;
+        }
+        .avatar-circle {
+            width: 100px; height: 100px; border-radius: 50%;
+            border: 3px solid var(--cyber-gold); display: flex;
+            align-items: center; justify-content: center; font-size: 40px;
+            background: rgba(251, 191, 36, 0.1);
+        }
+
+        /* QR MODAL */
+        #payment-terminal {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+            z-index: 2000; align-items: center; justify-content: center;
+        }
+        .terminal-box {
+            background: #fff; padding: 40px; border-radius: 20px; text-align: center;
+            color: #000; width: 450px; border: 5px solid var(--plasma-blue);
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="command-sidebar">
+        <div class="cmd-icon active" onclick="switchZone('arsenal', this)"><i class="fas fa-crosshairs"></i><span>ARSENAL</span></div>
+        <div class="cmd-icon" onclick="switchZone('logistics', this)"><i class="fas fa-truck-loading"></i><span>LOGISTICS</span></div>
+        <div class="cmd-icon" onclick="switchZone('warlords', this)"><i class="fas fa-user-shield"></i><span>WARLORDS</span></div>
+        <div class="cmd-icon" onclick="switchZone('intel', this)"><i class="fas fa-satellite-dish"></i><span>INTEL</span></div>
+        <div style="margin-top: auto;">
+            <div class="cmd-icon" onclick="emergencyShutdown()"><i class="fas fa-power-off"></i><span>EXIT</span></div>
+        </div>
+    </nav>
+
+    <div class="battlefield">
+        <header class="war-header">
+            <div class="title-glitch">LG-ARMORY.SYS v99.0</div>
+            <div style="display: flex; gap: 30px; align-items: center;">
+                <div id="war-timer" style="color: var(--plasma-blue); font-size: 20px;">00:00:00</div>
+                <div style="padding: 10px 20px; background: var(--blood-red); border-radius: 5px; font-weight: 900; font-size: 12px;">DEFCON 1</div>
+            </div>
+        </header>
+
+        <main class="theatre-of-war">
+            
+            <section id="arsenal" class="zone active">
+                <div class="arsenal-grid">
+                    <div class="weapon-catalog" id="weapon-list">
+                        </div>
+                    <div class="loadout-panel">
+                        <h2 style="font-family: 'Syncopate'; font-size: 14px; color: var(--plasma-blue); margin-bottom: 25px;">LOADOUT CONFIG</h2>
+                        <div id="loadout-list" style="flex:1; overflow-y:auto;">
+                            <div style="text-align:center; color:#4b5563; margin-top:50px;">NO GEAR EQUIPPED</div>
+                        </div>
+                        <div style="border-top: 1px solid rgba(6, 182, 212, 0.3); padding-top: 25px;">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+                                <span>TOTAL COST:</span>
+                                <b id="total-price" style="font-size: 24px; color: var(--cyber-gold);">0 $</b>
+                            </div>
+                            <button class="btn-fire" onclick="deployPayment()">APPROVE & DEPLOY</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="warlords" class="zone">
+                <h1 style="font-family: 'Syncopate'; margin-bottom: 40px;">GLOBAL WARLORDS HIERARCHY</h1>
+                <div id="warlord-list">
+                    </div>
+            </section>
+
+            <section id="logistics" class="zone">
+                <div style="display:flex; justify-content:space-between; margin-bottom:30px;">
+                    <h1 style="font-family: 'Syncopate';">STOCKPILE MANAGEMENT</h1>
+                    <button class="hyper-btn" style="background:var(--army-green); color:white; padding:10px 20px;" onclick="refillAll()">REFILL ALL AMMO</button>
+                </div>
+                <div style="background: var(--glass); border-radius: 20px; padding: 20px;">
+                    <table style="width:100%; text-align:left; border-collapse:collapse;">
+                        <thead>
+                            <tr style="color:var(--plasma-blue); border-bottom:1px solid #333;">
+                                <th style="padding:15px;">WEAPON TYPE</th>
+                                <th>QUANTITY</th>
+                                <th>STABILITY</th>
+                                <th>ACTION</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stock-list"></tbody>
+                    </table>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <div id="payment-terminal">
+        <div class="terminal-box">
+            <h2 style="font-family:'Syncopate'; margin-bottom:20px;">ENCRYPTED TRANSFER</h2>
+            <div id="qr-container"></div>
+            <p id="qr-amount" style="font-size:24px; font-weight:900; margin:20px 0;"></p>
+            <p style="color:#666; font-size:12px;">Scanning this QR will notify the Black Market dealer.</p>
+            <button class="btn-fire" style="background:#000;" onclick="closeTerminal()">CANCEL MISSION</button>
+            <button class="btn-fire" onclick="confirmPayment()">CONFIRM TRANSFER</button>
+        </div>
+    </div>
+
+<script>
+    /* LGSHOP ARMORY CORE ENGINE v99.0 
+       Total Control: Gia Luân
+    */
+
+    const WEAPONS = [
+        { id: 1, name: 'XM210 Plasma Rifle', price: 15500, stock: 45, power: 85, img: '🔫', info: 'Sát thương năng lượng cực cao.' },
+        { id: 2, name: 'Nuclear Warhead', price: 999000, stock: 2, power: 100, img: '🚀', info: 'Vũ khí hủy diệt hàng loạt.' },
+        { id: 3, name: 'Cyber Katana', price: 4200, stock: 15, power: 60, img: '⚔️', info: 'Lưỡi kiếm nano cắt mọi vật chất.' },
+        { id: 4, name: 'Railgun Sniper', price: 28000, stock: 10, power: 95, img: '🔭', info: 'Xuyên giáp từ khoảng cách 5km.' }
+    ];
+
+    const WARLORDS = [
+        { name: 'Commander Gia Luân', rank: 'SUPREME LEADER', points: 999999, avatar: '👑' },
+        { name: 'X-Phantom', rank: 'ELITE ASSASSIN', points: 45000, avatar: '👤' }
+    ];
+
+    let loadout = [];
+
+    // --- INITIALIZATION ---
+    function init() {
+        renderArsenal();
+        renderWarlords();
+        renderLogistics();
+        setInterval(updateTime, 1000);
+        console.log("LG Armory... Systems Nominal.");
+    }
+
+    function switchZone(id, el) {
+        document.querySelectorAll('.zone').forEach(z => z.classList.remove('active'));
+        document.querySelectorAll('.cmd-icon').forEach(i => i.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        el.classList.add('active');
+    }
+
+    function renderArsenal() {
+        const container = document.getElementById('weapon-list');
+        container.innerHTML = WEAPONS.map(w => `
+            <div class="weapon-card" onclick="equipWeapon(${w.id})">
+                <div style="font-size: 50px; margin-bottom:15px;">${w.img}</div>
+                <h3 style="color:var(--plasma-blue);">${w.name}</h3>
+                <div class="weapon-stats">
+                    DAMAGE POWER: ${w.power}%
+                    <div class="stat-bar"><div class="stat-fill" style="width:${w.power}%"></div></div>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <b style="color:var(--cyber-gold);">$${w.price.toLocaleString()}</b>
+                    <span style="font-size:10px;">STOCK: ${w.stock}</span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function equipWeapon(id) {
+        const w = WEAPONS.find(x => x.id === id);
+        if(w.stock <= 0) return Swal.fire('OUT OF STOCK', 'Vũ khí này đã hết hàng!', 'error');
+        loadout.push({...w});
+        w.stock--;
+        updateLoadoutUI();
+        renderArsenal();
+        renderLogistics();
+    }
+
+    function updateLoadoutUI() {
+        const container = document.getElementById('loadout-list');
+        if(loadout.length === 0) {
+            container.innerHTML = `<div style="text-align:center; color:#4b5563; margin-top:50px;">NO GEAR EQUIPPED</div>`;
+        } else {
+            container.innerHTML = loadout.map((item, idx) => `
+                <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between;">
+                    <span>${item.name}</span>
+                    <i class="fas fa-trash" style="color:var(--blood-red);" onclick="unequip(${idx})"></i>
+                </div>
+            `).join('');
+        }
+        const total = loadout.reduce((s, i) => s + i.price, 0);
+        document.getElementById('total-price').innerText = total.toLocaleString() + ' $';
+    }
+
+    function unequip(idx) {
+        const w = WEAPONS.find(x => x.id === loadout[idx].id);
+        w.stock++;
+        loadout.splice(idx, 1);
+        updateLoadoutUI();
+        renderArsenal();
+        renderLogistics();
+    }
+
+    function deployPayment() {
+        if(loadout.length === 0) return;
+        const total = loadout.reduce((s, i) => s + i.price, 0);
+        document.getElementById('payment-terminal').style.display = 'flex';
+        document.getElementById('qr-amount').innerText = `$${total.toLocaleString()}`;
+        document.getElementById('qr-container').innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=BLACKMARKET_TRANSFER_${total}" style="width:250px; border:10px solid #eee; border-radius:10px;">`;
+    }
+
+    function confirmPayment() {
+        Swal.fire({
+            title: 'MISSION SUCCESS',
+            text: 'Vũ khí đã được vận chuyển đến tọa độ của bạn.',
+            icon: 'success',
+            background: '#05070a',
+            color: '#fff'
+        });
+        loadout = [];
+        updateLoadoutUI();
+        closeTerminal();
+    }
+
+    function closeTerminal() { document.getElementById('payment-terminal').style.display = 'none'; }
+
+    function renderWarlords() {
+        const container = document.getElementById('warlord-list');
+        container.innerHTML = WARLORDS.map(v => `
+            <div class="warlord-card">
+                <div class="avatar-circle">${v.avatar}</div>
+                <div>
+                    <h2 style="color:var(--plasma-blue)">${v.name}</h2>
+                    <p style="color:var(--cyber-gold); font-size:12px; margin-top:5px;">RANK: ${v.rank}</p>
+                    <div style="margin-top:10px; font-size:11px;">CONQUEST SCORE: ${v.points.toLocaleString()}</div>
+                </div>
+                <div style="margin-left:auto; text-align:right;">
+                    <button class="hyper-btn">VIEW PROFILE</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function renderLogistics() {
+        const container = document.getElementById('stock-list');
+        container.innerHTML = WEAPONS.map(w => `
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                <td style="padding:20px;"><b>${w.name}</b></td>
+                <td>${w.stock} UNIT</td>
+                <td><span style="color:${w.stock < 5 ? 'var(--blood-red)' : 'var(--army-green)'}">${w.stock < 5 ? 'CRITICAL' : 'STABLE'}</span></td>
+                <td><button class="cmd-icon" style="width:auto; height:auto; padding:5px 15px;" onclick="addStock(${w.id})">REFILL</button></td>
+            </tr>
+        `).join('');
+    }
+
+    function addStock(id) {
+        WEAPONS.find(x => x.id === id).stock += 10;
+        renderLogistics();
+        renderArsenal();
+    }
+
+    function updateTime() {
+        document.getElementById('war-timer').innerText = new Date().toLocaleTimeString('vi-VN');
+    }
+
+    function emergencyShutdown() {
+        Swal.fire('SHUTTING DOWN', 'Xóa mọi dấu vết giao dịch...', 'warning').then(() => location.reload());
+    }
+
+    init();
+</script>
+</body>
+</html>
 
