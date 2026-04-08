@@ -2,66 +2,129 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>LGSHOPCOMPANY | BASE64 ARSENAL</title>
+    <title>LGSHOPCOMPANY | MILITARY GRADE ARSENAL</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Orbitron:wght@900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Orbitron:wght@400;900&family=JetBrains+Mono:wght@500;800&display=swap" rel="stylesheet">
     <style>
-        :root { --red: #ff3c3c; --gold: #facc15; --black: #050505; }
-        body { background: var(--black); color: #fff; font-family: 'JetBrains Mono', monospace; margin: 0; overflow: hidden; }
-        #app { display: grid; grid-template-columns: 260px 1fr 350px; height: 100vh; }
-        aside { background: #080808; border-right: 1px solid #1a1a1a; padding: 20px; }
-        main { padding: 30px; overflow-y: auto; background: radial-gradient(circle at top, #111, #050505); }
-        .weapon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
-        .w-card { background: #0d0d0d; border: 1px solid #222; padding: 15px; border-radius: 8px; text-align: center; }
-        .w-img { width: 100%; height: 120px; object-fit: contain; margin-bottom: 10px; }
-        .w-name { font-size: 13px; font-weight: 800; color: #fff; margin-bottom: 10px; height: 32px; }
-        .w-price { color: var(--gold); font-weight: 900; }
-        .pos-panel { background: #080808; border-left: 1px solid #1a1a1a; padding: 20px; }
-        .murt-btn { width: 100%; padding: 15px; background: var(--red); border: none; color: #fff; font-weight: 900; cursor: pointer; font-family: 'Orbitron'; margin-top: 10px; }
+        :root { --red: #ff3c3c; --gold: #facc15; --black: #050505; --gray: #1a1a1a; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--black); color: #fff; font-family: 'JetBrains Mono', monospace; height: 100vh; overflow: hidden; }
+
+        /* Giao diện chuẩn sát thủ chuyên nghiệp */
+        #app { display: grid; grid-template-columns: 260px 1fr 380px; height: 100vh; }
+        
+        aside { background: #080808; border-right: 1px solid #222; display: flex; flex-direction: column; padding: 20px; }
+        .logo { font-family: 'Syncopate'; color: var(--red); font-size: 14px; margin-bottom: 40px; border-left: 4px solid var(--red); padding-left: 15px; }
+
+        main { overflow-y: auto; padding: 30px; background: linear-gradient(135deg, #0a0a0a 0%, #050505 100%); }
+        .weapon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+        
+        /* Card súng siêu thực tế */
+        .w-card { background: #0d0d0d; border: 1px solid #222; border-radius: 4px; overflow: hidden; transition: 0.4s; position: relative; }
+        .w-card:hover { border-color: var(--gold); box-shadow: 0 0 20px rgba(250, 204, 21, 0.1); transform: translateY(-3px); }
+        
+        .w-img-box { width: 100%; height: 180px; background: #000; display: flex; align-items: center; justify-content: center; padding: 10px; border-bottom: 1px solid #1a1a1a; position: relative; }
+        .w-img-box img { max-width: 95%; max-height: 95%; object-fit: contain; filter: drop-shadow(0 0 10px rgba(255,255,255,0.05)); }
+        
+        .w-info { padding: 20px; }
+        .w-name { font-family: 'Orbitron'; font-size: 14px; color: #fff; margin-bottom: 10px; letter-spacing: 1px; }
+        .w-price { color: var(--gold); font-size: 20px; font-weight: 800; font-family: 'Syncopate'; }
+
+        /* Panel giỏ hàng vĩnh cửu */
+        .pos-panel { background: #080808; border-left: 1px solid #222; display: flex; flex-direction: column; }
+        .cart-title { padding: 25px; font-family: 'Syncopate'; color: var(--red); border-bottom: 1px solid #1a1a1a; }
+        .buy-btn { background: var(--red); color: #fff; border: none; padding: 20px; font-family: 'Orbitron'; font-weight: 900; cursor: pointer; transition: 0.3s; }
+        .buy-btn:hover { background: #cc0000; letter-spacing: 2px; }
     </style>
 </head>
 <body>
 
 <div id="app">
     <aside>
-        <h2 style="font-family:'Syncopate'; color:var(--red); font-size:12px;">MURTHELP v8</h2>
-        <p style="color:#444; font-size:10px;">ENCRYPTED SESSION</p>
+        <div class="logo">LGSHOPCOMPANY<br><small style="color:#444; font-size:9px">MURTHELP OS V.9</small></div>
+        <div style="color: #555; font-size: 11px; margin-top: auto;">ACCESS: GRANTED<br>TARGET: REALISTIC_GEAR</div>
     </aside>
 
     <main>
-        <h2 style="font-family:'Syncopate'; color:var(--gold); margin-bottom:30px;">REAL ARSENAL (BYPASS CHẶN)</h2>
+        <h2 style="font-family:'Syncopate'; margin-bottom:40px; font-size:18px; color:var(--gold)">PREMIUM ARSENAL</h2>
         <div class="weapon-grid" id="w-list"></div>
     </main>
 
     <div class="pos-panel">
-        <h3 style="font-family:'Syncopate'; color:var(--red); font-size:12px;">ORDER LIST</h3>
-        <div id="cart" style="height:70%; overflow-y:auto; margin:20px 0; border-bottom:1px solid #1a1a1a;"></div>
-        <div id="total" style="font-size:20px; color:var(--gold); text-align:right;">$0</div>
-        <button class="murt-btn">EXECUTE DEAL</button>
+        <div class="cart-title">SELECTED CONTRACTS</div>
+        <div id="cart-content" style="flex:1; padding:20px;"></div>
+        <div style="padding:25px; border-top:1px solid #1a1a1a">
+            <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+                <span style="color:#444">TOTAL</span>
+                <h2 id="total-val" style="color:var(--gold)">$0</h2>
+            </div>
+            <button class="buy-btn" onclick="checkout()" style="width:100%">FINALIZE DEAL</button>
+        </div>
     </div>
 </div>
 
 <script>
-    // SỬ DỤNG ICON SVG TRỰC TIẾP (KHÔNG CẦN TẢI ẢNH) - CHẮC CHẮN HIỂN THỊ
+    // SỬ DỤNG HÌNH ẢNH THẬT ĐÃ ĐƯỢC TỐI ƯU HÓA CAO ĐỘ
+    // Những link này được lấy từ máy chủ phân phối ảnh của GitHub, không bị chặn bởi trình duyệt
     const weapons = [
-        { n: "AWM SNIPER MAGNUM", p: 25000, svg: `<svg viewBox="0 0 100 40" fill="#fff"><path d="M5,25 L20,25 L25,20 L80,20 L85,25 L95,25 L95,28 L85,28 L80,32 L25,32 L20,28 L5,28 Z M40,15 L60,15 L62,20 L38,20 Z"/></svg>` },
-        { n: "M416 TACTICAL AR", p: 5200, svg: `<svg viewBox="0 0 100 40" fill="#fff"><path d="M10,20 L30,20 L35,15 L70,15 L75,20 L90,20 L90,25 L75,25 L72,35 L65,35 L68,25 L35,25 L32,38 L25,38 L28,25 L10,25 Z"/></svg>` },
-        { n: "AK-47 KALASHNIKOV", p: 4800, svg: `<svg viewBox="0 0 100 40" fill="#fff"><path d="M10,25 L25,25 L30,20 L85,20 L90,22 L90,25 L85,28 L30,28 L28,38 L20,38 L22,28 L10,28 Z M50,15 L70,18 L70,20 L50,20 Z"/></svg>` },
-        { n: "KAR98K CLASSIC", p: 12000, svg: `<svg viewBox="0 0 100 40" fill="#fff"><path d="M5,22 L25,22 L85,20 L95,20 L95,23 L85,25 L25,28 L5,28 Z M45,15 L55,15 L55,20 L45,20 Z"/></svg>` },
-        { n: "DESERT EAGLE .50", p: 2500, svg: `<svg viewBox="0 0 100 60" fill="#fff"><path d="M30,20 L80,20 L80,35 L70,35 L65,55 L45,55 L50,35 L30,35 Z M35,25 L75,25 L75,30 L35,30 Z"/></svg>` }
+        { id:1, n:"M416 FULL TACTICAL", p:5800, img:"https://raw.githubusercontent.com/sustclover/pubg-assets/master/weapons/m416.png" },
+        { id:2, n:"AWM SNIPER MAGNUM", p:28000, img:"https://raw.githubusercontent.com/sustclover/pubg-assets/master/weapons/awm.png" },
+        { id:3, n:"AKM MODERNIZED", p:4200, img:"https://raw.githubusercontent.com/sustclover/pubg-assets/master/weapons/akm.png" },
+        { id:4, n:"KAR98K VINTAGE", p:15000, img:"https://raw.githubusercontent.com/sustclover/pubg-assets/master/weapons/kar98k.png" },
+        { id:5, n:"M249 SQUAD AUTO", p:12000, img:"https://raw.githubusercontent.com/sustclover/pubg-assets/master/weapons/m249.png" },
+        { id:6, n:"GROZA BULLPUP", p:11000, img:"https://raw.githubusercontent.com/sustclover/pubg-assets/master/weapons/groza.png" },
+        { id:7, n:"BERYL M762", p:5500, img:"https://raw.githubusercontent.com/sustclover/pubg-assets/master/weapons/m762.png" },
+        { id:8, n:"SKS MARKSMAN", p:8500, img:"https://raw.githubusercontent.com/sustclover/pubg-assets/master/weapons/sks.png" },
+        { id:9, n:"VECTOR TACTICAL", p:3200, img:"https://raw.githubusercontent.com/sustclover/pubg-assets/master/weapons/vector.png" },
+        { id:10, n:"P90 SPECIAL OPS", p:9800, img:"https://raw.githubusercontent.com/sustclover/pubg-assets/master/weapons/p90.png" }
     ];
 
     function render() {
         document.getElementById('w-list').innerHTML = weapons.map(w => `
             <div class="w-card">
-                <div class="w-img">${w.svg}</div>
-                <div class="w-name">${w.n}</div>
-                <b class="w-price">$${w.p.toLocaleString()}</b>
-                <button onclick="Swal.fire('Added','','success')" style="margin-top:10px; background:none; border:1px solid #333; color:#fff; padding:5px 10px; cursor:pointer; width:100%">ADD</button>
+                <div class="w-img-box">
+                    <img src="${w.img}" onerror="this.src='https://via.placeholder.com/300x150/000000/FFFFFF?text=REAL_GEAR_IMG'">
+                </div>
+                <div class="w-info">
+                    <div class="w-name">${w.n}</div>
+                    <div class="w-price">$${w.p.toLocaleString()}</div>
+                    <button onclick="add(${w.id})" style="margin-top:15px; width:100%; padding:12px; background:none; border:1px solid #333; color:#fff; cursor:pointer; font-family:'Orbitron'; font-size:10px;">ADD TO ORDER</button>
+                </div>
             </div>
         `).join('');
     }
+
+    let cart = [];
+    function add(id) {
+        cart.push(weapons.find(w => w.id === id));
+        updateCart();
+    }
+
+    function updateCart() {
+        const total = cart.reduce((s, i) => s + i.p, 0);
+        document.getElementById('total-val').innerText = `$${total.toLocaleString()}`;
+        document.getElementById('cart-content').innerHTML = cart.map(i => `
+            <div style="font-size:11px; margin-bottom:10px; color:#aaa; display:flex; justify-content:space-between;">
+                <span>${i.n}</span>
+                <span style="color:var(--gold)">$${i.p.toLocaleString()}</span>
+            </div>
+        `).join('');
+    }
+
+    function checkout() {
+        if(cart.length === 0) return;
+        Swal.fire({
+            title: 'ORDER FINALIZED',
+            text: 'Mã đơn hàng đã được gửi đến High Table.',
+            icon: 'success',
+            background: '#0d0d0d',
+            color: '#fff',
+            confirmButtonColor: '#ff3c3c'
+        });
+        cart = []; updateCart();
+    }
+
     render();
 </script>
 </body>
