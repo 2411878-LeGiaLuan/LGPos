@@ -3,298 +3,237 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MURTHELP | IP15 & LAPTOP EDITION</title>
-    
+    <title>MURTHELP | SUPREME COMMAND CENTER</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
-        :root {
-            --red: #ff3c3c;
-            --black: #050505;
-            --panel: #0a0a0a;
-            --gold: #facc15;
-        }
+        :root { --red: #ff3c3c; --black: #050505; --panel: #0d0d0d; --gold: #facc15; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--black); color: #fff; font-family: 'JetBrains Mono', monospace; height: 100vh; overflow: hidden; }
 
-        /* RESET */
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body {
-            background: var(--black);
-            color: #fff;
-            font-family: 'JetBrains Mono', monospace;
-            height: 100vh;
-            overflow: hidden;
+        /* HEADER & NAVIGATION */
+        header { 
+            height: 60px; background: #000; border-bottom: 1px solid #222; 
+            display: flex; align-items: center; padding: 0 20px; gap: 20px; z-index: 1001; position: relative;
         }
+        .menu-toggle { font-size: 24px; cursor: pointer; color: var(--red); }
 
-        /* LOGIN GATE */
-        #gate {
-            position: fixed; inset: 0; background: #000; z-index: 10000;
-            display: flex; align-items: center; justify-content: center;
+        /* MAIN LAYOUT */
+        .wrapper { display: flex; height: calc(100vh - 60px); position: relative; }
+
+        /* SIDEBAR (Bản chức năng thu gọn) */
+        aside.sidebar { 
+            width: 280px; background: var(--panel); border-right: 1px solid #222;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); overflow: hidden; display: flex; flex-direction: column;
         }
-        .gate-box { width: 90%; max-width: 400px; text-align: center; padding: 30px; border: 1px solid #222; }
-        .gate-input { width: 100%; padding: 15px; background: #111; border: 1px solid #333; color: #fff; margin: 20px 0; text-align: center; }
+        aside.sidebar.collapsed { width: 0; border: none; }
 
-        /* MAIN STRUCTURE */
-        #app { display: none; height: 100vh; display: flex; flex-direction: column; }
+        .nav-item { 
+            padding: 20px; border-bottom: 1px solid #1a1a1a; cursor: pointer; white-space: nowrap;
+            transition: 0.3s; display: flex; align-items: center; gap: 15px;
+        }
+        .nav-item:hover { background: #1a1a1a; color: var(--red); }
+
+        /* VIEWPORT */
+        main.viewport { flex: 1; overflow-y: auto; padding: 20px; background: #080808; position: relative; }
+        .weapon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
+
+        /* WEAPON CARD (Ảnh tự tạo đẹp) */
+        .w-card { 
+            background: #111; border: 1px solid #222; border-radius: 10px; padding: 15px; 
+            text-align: center; transition: 0.3s;
+        }
+        .w-card:hover { border-color: var(--red); transform: translateY(-5px); }
+        .w-img-box { 
+            width: 100%; height: 130px; background: linear-gradient(45deg, #1a1a1a, #000); 
+            border-radius: 5px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center;
+            border: 1px solid #333; overflow: hidden;
+        }
+        .w-img-box img { width: 90%; height: 90%; object-fit: contain; filter: drop-shadow(0 0 5px var(--red)); }
+
+        /* BOSS DASHBOARD */
+        .boss-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .stat-card { background: var(--panel); padding: 20px; border-radius: 10px; border-left: 4px solid var(--red); }
         
-        /* TOP NAV (Dùng cho cả 2 thiết bị) */
-        header {
-            height: 60px; background: var(--panel); border-bottom: 1px solid #222;
-            display: flex; justify-content: space-between; align-items: center; padding: 0 20px;
-            flex-shrink: 0;
+        /* GIỎ HÀNG (Floating for Mobile) */
+        .cart-overlay {
+            position: fixed; right: 20px; bottom: 20px; width: 350px; max-height: 500px;
+            background: var(--panel); border: 2px solid var(--red); border-radius: 15px;
+            display: flex; flex-direction: column; box-shadow: 0 0 30px rgba(255,60,60,0.3);
+            z-index: 1000; transition: 0.4s;
         }
+        .cart-overlay.hidden { transform: translateX(400px); }
 
-        .main-container { flex: 1; display: flex; overflow: hidden; position: relative; }
-
-        /* SIDEBAR (Laptop hiển thị, Mobile ẩn vào Menu) */
-        aside.sidebar {
-            width: 240px; background: var(--panel); border-right: 1px solid #222;
-            padding: 20px; transition: 0.3s;
-        }
-
-        /* CONTENT AREA */
-        main.content { flex: 1; overflow-y: auto; padding: 20px; background: #080808; }
-        .weapon-grid {
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); 
-            gap: 15px; 
-        }
-
-        /* WEAPON CARD */
-        .w-card {
-            background: #0d0d0d; border: 1px solid #1a1a1a; border-radius: 8px;
-            padding: 12px; text-align: center; position: relative;
-        }
-        .w-card img { width: 100%; height: 120px; object-fit: contain; margin-bottom: 10px; }
-        .w-card h3 { font-size: 12px; margin-bottom: 5px; height: 34px; overflow: hidden; }
-        .w-price { color: var(--gold); font-weight: bold; font-size: 14px; }
-        .add-btn {
-            width: 100%; padding: 8px; margin-top: 10px; background: var(--red);
-            border: none; color: #fff; font-size: 10px; font-weight: bold; cursor: pointer;
-        }
-
-        /* RIGHT PANEL (LOADOUT) - TRỌNG TÂM CỦA VIỆC THU GỌN */
-        .cart-panel {
-            width: 350px; background: var(--panel); border-left: 1px solid #222;
-            display: flex; flex-direction: column; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative; z-index: 999;
-        }
-
-        /* Nút thu gọn trên Laptop */
-        .collapse-trigger {
-            position: absolute; left: -30px; top: 50%; transform: translateY(-50%);
-            width: 30px; height: 60px; background: var(--red);
-            display: flex; align-items: center; justify-content: center;
-            border-radius: 10px 0 0 10px; cursor: pointer;
-        }
-
-        .cart-panel.hidden { transform: translateX(350px); width: 0; margin-left: 0; border: none; }
-
-        /* RESPONSIVE CHO IPHONE 15 */
+        /* RESPONSIVE IPHONE 15 */
         @media (max-width: 768px) {
-            aside.sidebar { display: none; }
-            .cart-panel {
-                position: fixed; bottom: -100%; left: 0; width: 100%; height: 85vh;
-                border-left: none; border-top: 2px solid var(--red); border-radius: 20px 20px 0 0;
-            }
-            .cart-panel.active { bottom: 0; }
-            .collapse-trigger { display: none; }
-            
-            /* Nút giỏ hàng nổi trên Mobile */
-            #mobile-cart-btn {
-                display: flex !important;
-                position: fixed; bottom: 30px; right: 20px;
-                width: 65px; height: 65px; background: var(--red);
-                border-radius: 50%; align-items: center; justify-content: center;
-                box-shadow: 0 10px 30px rgba(255, 60, 60, 0.5); z-index: 1000;
-            }
-            #mobile-cart-count {
-                position: absolute; top: 0; right: 0; background: #fff;
-                color: #000; width: 22px; height: 22px; border-radius: 50%;
-                font-size: 12px; font-weight: bold; display: flex; align-items: center; justify-content: center;
-            }
+            .cart-overlay { width: calc(100% - 40px); left: 20px; bottom: 10px; }
+            .sidebar { position: absolute; z-index: 1002; height: 100%; box-shadow: 50px 0 100px #000; }
         }
 
         /* MODAL QR */
-        .modal {
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95);
-            z-index: 10001; align-items: center; justify-content: center; padding: 20px;
-        }
-        .modal-box { background: #fff; color: #000; padding: 30px; border-radius: 15px; width: 100%; max-width: 400px; text-align: center; }
-        #qrcode { display: flex; justify-content: center; margin: 20px 0; }
-        
-        .btn-pay { width: 100%; padding: 15px; background: var(--red); color: #fff; border: none; font-weight: bold; margin-top: 10px; border-radius: 5px; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center; }
+        .modal-box { background: #fff; color: #000; padding: 30px; border-radius: 15px; width: 90%; max-width: 400px; text-align: center; }
     </style>
 </head>
 <body>
 
-    <div id="gate">
-        <div class="gate-box">
-            <h1 style="font-family:'Syncopate'; color:var(--red)">MURTHELP</h1>
-            <input type="password" id="pass" class="gate-input" placeholder="ACCESS CODE">
-            <button class="add-btn" style="padding:15px" onclick="login()">AUTHORIZE</button>
-        </div>
-    </div>
+    <header>
+        <i class="fas fa-bars menu-toggle" onclick="toggleSidebar()"></i>
+        <div style="font-family:'Syncopate'; font-size:18px; color:var(--red)">MURTHELP</div>
+        <div style="margin-left: auto; font-size: 12px; color: #666;">BOSS: <span style="color:var(--gold)">LUAN LG</span></div>
+    </header>
 
-    <div id="app">
-        <header>
-            <div style="font-family:'Syncopate'; font-size:14px; color:var(--red)">MURTHELP.SYS</div>
-            <div id="user-info" style="font-size:10px">ID: GIALUAN_ADMIN</div>
-        </header>
+    <div class="wrapper">
+        <aside class="sidebar" id="sidebar">
+            <div class="nav-item" onclick="showTab('arsenal')"><i class="fas fa-crosshairs"></i> VŨ KHÍ QUÂN DỤNG</div>
+            <div class="nav-item" onclick="showTab('management')"><i class="fas fa-chart-line"></i> DOANH THU & KHO</div>
+            <div class="nav-item" onclick="showTab('vip')"><i class="fas fa-crown"></i> QUẢN LÝ VIP</div>
+            <div class="nav-item" style="margin-top:auto; color:var(--red)" onclick="location.reload()"><i class="fas fa-sign-out-alt"></i> THOÁT HỆ THỐNG</div>
+        </aside>
 
-        <div class="main-container">
-            <aside class="sidebar">
-                <p style="color:#444; margin-bottom:20px">CATEGORIES</p>
-                <div style="color:var(--red)" onclick="render('ALL')">● ALL UNITS</div>
-                <div style="color:var(--gold)" onclick="render('FIREARMS')">● FIREARMS</div>
-                <div style="color:#a855f7" onclick="render('HEAVY')">● HEAVY</div>
-            </aside>
-
-            <main class="content">
+        <main class="viewport">
+            <div id="tab-arsenal" class="tab-content">
+                <h2 style="margin-bottom:20px; font-family:'Syncopate'; font-size:14px;">TACTICAL ARSENAL</h2>
                 <div class="weapon-grid" id="weapon-list"></div>
-            </main>
+            </div>
 
-            <div class="cart-panel" id="cart-drawer">
-                <div class="collapse-trigger" onclick="toggleCartLaptop()">
-                    <i class="fas fa-chevron-right" id="arrow-icon"></i>
-                </div>
-                
-                <div style="padding:25px; border-bottom:1px solid #222; display:flex; justify-content:space-between">
-                    <span style="font-family:'Syncopate'; font-size:12px">LOADOUT</span>
-                    <i class="fas fa-times" onclick="closeCartMobile()" style="cursor:pointer"></i>
-                </div>
-
-                <div id="cart-items-container" style="flex:1; overflow-y:auto; padding:20px">
+            <div id="tab-management" class="tab-content" style="display:none;">
+                <h2 style="margin-bottom:20px; font-family:'Syncopate'; font-size:14px;">BOSS DASHBOARD</h2>
+                <div class="boss-stats">
+                    <div class="stat-card">
+                        <small>TỔNG DOANH THU</small>
+                        <h1 id="total-revenue" style="color:var(--gold)">$0</h1>
                     </div>
-
-                <div style="padding:25px; background:#0f0f0f; border-top:1px solid #222">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:15px">
-                        <span>TOTAL</span>
-                        <span id="total-price" style="color:var(--gold); font-size:20px; font-weight:bold">$0</span>
+                    <div class="stat-card">
+                        <small>ĐƠN HÀNG THÀNH CÔNG</small>
+                        <h1 style="color:var(--red)">142</h1>
                     </div>
-                    <button class="btn-pay" onclick="openPayment()">EXECUTE PURCHASE</button>
+                </div>
+                <div style="background:var(--panel); padding:20px; border-radius:10px;">
+                    <h3>TRẠNG THÁI KHO</h3>
+                    <div id="stock-list" style="margin-top:15px; font-size:12px;"></div>
                 </div>
             </div>
+        </main>
+    </div>
+
+    <div class="cart-overlay" id="cart-ui">
+        <div style="padding:15px; border-bottom:1px solid #333; display:flex; justify-content:space-between; align-items:center;">
+            <b style="font-size:12px;"><i class="fas fa-shopping-cart"></i> LOADOUT</b>
+            <i class="fas fa-chevron-down" onclick="toggleCart()" style="cursor:pointer"></i>
+        </div>
+        <div id="cart-items" style="flex:1; overflow-y:auto; padding:15px;"></div>
+        <div style="padding:15px; background:#111; border-radius: 0 0 15px 15px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                <span>TỔNG BILL:</span>
+                <b id="bill-total" style="color:var(--gold); font-size:18px;">$0</b>
+            </div>
+            <button onclick="checkout()" style="width:100%; padding:12px; background:var(--red); border:none; color:#fff; font-weight:bold; cursor:pointer;">THANH TOÁN NGAY</button>
         </div>
     </div>
 
-    <div id="mobile-cart-btn" style="display:none;" onclick="openCartMobile()">
-        <i class="fas fa-shopping-cart" style="font-size:24px"></i>
-        <div id="mobile-cart-count">0</div>
+    <div id="cart-trigger" onclick="toggleCart()" style="position:fixed; bottom:20px; right:20px; width:50px; height:50px; background:var(--red); border-radius:50%; display:none; align-items:center; justify-content:center; z-index:999;">
+        <i class="fas fa-shopping-cart"></i>
     </div>
 
-    <div id="pay-modal" class="modal">
+    <div id="qr-modal" class="modal">
         <div class="modal-box">
-            <h2 style="font-family:'Syncopate'">SECURE PAY</h2>
-            <div id="qrcode"></div>
-            <h1 id="vnd-val" style="color:var(--red)">0 VNĐ</h1>
-            <p style="font-size:10px; color:#666">TRANS_ID: <span id="trans-id"></span></p>
-            <button class="btn-pay" onclick="confirmPayment()">CONFIRM PAID</button>
-            <button class="btn-pay" style="background:#ddd; color:#000" onclick="document.getElementById('pay-modal').style.display='none'">CANCEL</button>
+            <h3 style="font-family:'Syncopate'">XÁC NHẬN GIAO DỊCH</h3>
+            <div id="qrcode" style="margin:20px 0; display:flex; justify-content:center;"></div>
+            <h2 id="vnd-final" style="color:var(--red)">0 VNĐ</h2>
+            <p style="font-size:11px; margin:10px 0;">Vui lòng quét mã để hoàn tất đơn hàng quân dụng.</p>
+            <button onclick="confirmPaid()" style="width:100%; padding:15px; background:#000; color:#fff; border:none; font-weight:bold; cursor:pointer;">ĐÃ CHUYỂN KHOẢN</button>
         </div>
     </div>
 
 <script>
-    // --- DATABASE 100 LOẠI SÚNG ---
-    const weapons = [];
-    const types = ["FIREARMS", "HEAVY", "MELEE"];
-    const images = [
-        "https://www.pngplay.com/wp-content/uploads/13/Glock-17-PNG-Clipart-Background.png",
-        "https://www.pngplay.com/wp-content/uploads/13/Sniper-Rifle-Transparent-Images.png",
-        "https://purepng.com/public/uploads/large/purepng.com-assault-rifle-ak-47weaponassault-riflegun-941524672688u9kno.png"
+    // 1. DATA VŨ KHÍ (CÓ ẢNH ĐẸP)
+    const weapons = [
+        { id:1, name:"Assault Rifle AK-103", price:2500, img:"https://www.pngplay.com/wp-content/uploads/13/Glock-17-PNG-Clipart-Background.png" },
+        { id:2, name:"Sniper Barrett M82", price:12000, img:"https://www.pngplay.com/wp-content/uploads/13/Sniper-Rifle-Transparent-Images.png" },
+        { id:3, name:"Combat Knife S1", price:450, img:"https://www.pngplay.com/wp-content/uploads/13/Knife-Transparent-PNG.png" }
     ];
-
-    for(let i=1; i<=100; i++) {
-        weapons.push({
-            id: i,
-            name: `Khí tài Tactical #${1000 + i}`,
-            type: types[i % 3],
-            price: Math.floor(Math.random() * 15000) + 800,
-            img: images[i % 3]
-        });
+    // Tự động tạo thêm 100 món
+    for(let i=4; i<=100; i++) {
+        weapons.push({ id:i, name:`Tactical Weapon #${i+100}`, price: Math.floor(Math.random()*5000)+500, img: (i%2==0 ? "https://www.pngplay.com/wp-content/uploads/13/Glock-17-PNG-Clipart-Background.png" : "https://www.pngplay.com/wp-content/uploads/13/Sniper-Rifle-Transparent-Images.png") });
     }
 
     let cart = [];
+    let revenue = 0;
 
-    function login() {
-        const p = document.getElementById('pass').value;
-        if(p === 'LuanLG' || p === 'LGPro') {
-            document.getElementById('gate').style.display = 'none';
-            document.getElementById('app').style.display = 'flex';
-            render();
+    // 2. RENDER VŨ KHÍ CÓ ẢNH
+    function renderArsenal() {
+        const grid = document.getElementById('weapon-list');
+        grid.innerHTML = weapons.map(w => `
+            <div class="w-card">
+                <div class="w-img-box"><img src="${w.img}"></div>
+                <div style="font-size:11px; height:30px; overflow:hidden; font-weight:bold;">${w.name}</div>
+                <div style="color:var(--gold); margin:8px 0;">$${w.price.toLocaleString()}</div>
+                <button onclick="addToCart(${w.id})" style="width:100%; padding:5px; background:none; border:1px solid var(--red); color:var(--red); font-size:10px; cursor:pointer;">+ LOADOUT</button>
+            </div>
+        `).join('');
+    }
+
+    // 3. XỬ LÝ SIDEBAR (3 GẠCH)
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('collapsed');
+    }
+
+    // 4. XỬ LÝ TAB
+    function showTab(tab) {
+        document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+        document.getElementById('tab-' + tab).style.display = 'block';
+        if(window.innerWidth < 768) toggleSidebar(); // Tự đóng trên mobile
+    }
+
+    // 5. GIỎ HÀNG & THANH TOÁN
+    function addToCart(id) {
+        const item = weapons.find(w => w.id === id);
+        cart.push(item);
+        updateCart();
+        const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 1000 });
+        Toast.fire({ icon: 'success', title: 'Đã thêm vũ khí' });
+    }
+
+    function updateCart() {
+        const list = document.getElementById('cart-items');
+        list.innerHTML = cart.map((item, idx) => `
+            <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:8px; border-bottom:1px solid #222; padding-bottom:5px;">
+                <span>${item.name}</span>
+                <b style="color:var(--gold)">$${item.price}</b>
+                <i class="fas fa-trash" onclick="removeFromCart(${idx})" style="color:#444"></i>
+            </div>
+        `).join('');
+        const total = cart.reduce((s, i) => s + i.price, 0);
+        document.getElementById('bill-total').innerText = `$${total.toLocaleString()}`;
+    }
+
+    function removeFromCart(idx) { cart.splice(idx, 1); updateCart(); }
+
+    function toggleCart() {
+        const cartUI = document.getElementById('cart-ui');
+        const trigger = document.getElementById('cart-trigger');
+        if(cartUI.classList.contains('hidden')) {
+            cartUI.classList.remove('hidden');
+            trigger.style.display = 'none';
         } else {
-            Swal.fire('Error', 'Access Denied', 'error');
+            cartUI.classList.add('hidden');
+            trigger.style.display = 'flex';
         }
     }
 
-    function render(filter = 'ALL') {
-        const list = document.getElementById('weapon-list');
-        list.innerHTML = '';
-        const data = filter === 'ALL' ? weapons : weapons.filter(w => w.type === filter);
-        
-        data.forEach(w => {
-            list.innerHTML += `
-                <div class="w-card">
-                    <img src="${w.img}">
-                    <h3>${w.name}</h3>
-                    <div class="w-price">$${w.price.toLocaleString()}</div>
-                    <button class="add-btn" onclick="addToCart(${w.id})">ADD TO LOADOUT</button>
-                </div>
-            `;
-        });
-    }
-
-    function addToCart(id) {
-        const w = weapons.find(x => x.id === id);
-        cart.push(w);
-        updateUI();
-    }
-
-    function updateUI() {
-        const container = document.getElementById('cart-items-container');
-        container.innerHTML = cart.map((item, index) => `
-            <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size:11px; border-bottom:1px solid #111; padding-bottom:5px">
-                <span>${item.name}</span>
-                <span style="color:var(--gold)">$${item.price}</span>
-                <i class="fas fa-trash" onclick="remove(${index})" style="color:var(--red)"></i>
-            </div>
-        `).join('');
-
-        const total = cart.reduce((s, i) => s + i.price, 0);
-        document.getElementById('total-price').innerText = `$${total.toLocaleString()}`;
-        document.getElementById('mobile-cart-count').innerText = cart.length;
-    }
-
-    function remove(idx) {
-        cart.splice(idx, 1);
-        updateUI();
-    }
-
-    // --- LOGIC ĐIỀU KHIỂN BẢNG CHỨC NĂNG ---
-    function toggleCartLaptop() {
-        const panel = document.getElementById('cart-drawer');
-        const icon = document.getElementById('arrow-icon');
-        panel.classList.toggle('hidden');
-        icon.classList.toggle('fa-chevron-left');
-        icon.classList.toggle('fa-chevron-right');
-    }
-
-    function openCartMobile() { document.getElementById('cart-drawer').classList.add('active'); }
-    function closeCartMobile() { document.getElementById('cart-drawer').classList.remove('active'); }
-
-    // --- THANH TOÁN ---
-    function openPayment() {
+    function checkout() {
         if(cart.length === 0) return;
         const totalUSD = cart.reduce((s, i) => s + i.price, 0);
         const totalVND = totalUSD * 25450;
-        const tid = "LGS" + Math.floor(Math.random()*99999);
         
-        document.getElementById('pay-modal').style.display = 'flex';
-        document.getElementById('vnd-val').innerText = totalVND.toLocaleString() + " VNĐ";
-        document.getElementById('trans-id').innerText = tid;
+        document.getElementById('qr-modal').style.display = 'flex';
+        document.getElementById('vnd-final').innerText = totalVND.toLocaleString() + " VNĐ";
         
+        const tid = "LGS_" + Math.floor(Math.random()*99999);
         document.getElementById('qrcode').innerHTML = "";
         new QRCode(document.getElementById("qrcode"), {
             text: `https://img.vietqr.io/image/970422-0348710332-compact.jpg?amount=${totalVND}&addInfo=${tid}`,
@@ -302,13 +241,19 @@
         });
     }
 
-    function confirmPayment() {
-        Swal.fire('SUCCESS', 'Giao dịch hoàn tất!', 'success');
+    function confirmPaid() {
+        const totalUSD = cart.reduce((s, i) => s + i.price, 0);
+        revenue += totalUSD;
+        document.getElementById('total-revenue').innerText = `$${revenue.toLocaleString()}`;
+        
+        Swal.fire('MISSION SUCCESS', 'Đơn hàng đã được ghi nhận vào doanh thu hệ thống!', 'success');
         cart = [];
-        updateUI();
-        document.getElementById('pay-modal').style.display = 'none';
-        closeCartMobile();
+        updateCart();
+        document.getElementById('qr-modal').style.display = 'none';
     }
+
+    // Khởi tạo
+    renderArsenal();
 </script>
 </body>
 </html>
