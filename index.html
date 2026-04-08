@@ -3,354 +3,334 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LGBank POS Ultimate v7.0 - 2026 Edition</title>
+    <title>LGPos SuperApp v8.0 - Future of POS</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --p: #0f172a; --s: #3b82f6; --success: #10b981;
-            --danger: #ef4444; --warning: #f59e0b; --bg: #f8fafc;
+            --primary: #0f172a; --secondary: #3b82f6; --success: #10b981;
+            --danger: #f43f5e; --warning: #f59e0b; --bg: #f1f5f9;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); height: 100vh; overflow: hidden; display: flex; flex-direction: column; color: #1e293b; }
+        body { background: var(--bg); height: 100vh; display: flex; overflow: hidden; color: #1e293b; }
 
-        /* GIAO DIỆN CHÍNH */
-        .top-nav { background: var(--p); color: white; padding: 12px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--s); }
-        .main-container { flex: 1; display: flex; overflow: hidden; }
+        /* SIDEBAR THU GỌN (CHUYÊN NGHIỆP) */
+        .sidebar { width: 85px; background: var(--primary); display: flex; flex-direction: column; align-items: center; padding: 20px 0; gap: 15px; z-index: 100; transition: 0.3s; }
+        .sidebar:hover { width: 100px; }
+        .nav-link { color: #94a3b8; width: 60px; height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 16px; cursor: pointer; transition: 0.2s; text-decoration: none; }
+        .nav-link i { font-size: 20px; }
+        .nav-link span { font-size: 9px; margin-top: 5px; font-weight: 700; text-transform: uppercase; }
+        .nav-link.active { background: var(--secondary); color: white; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); }
+
+        /* MAIN AREA */
+        .main-content { flex: 1; display: flex; flex-direction: column; position: relative; }
+        .header { background: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         
-        /* SIDEBAR NÂNG CẤP */
-        .sidebar { width: 100px; background: #1e293b; display: flex; flex-direction: column; padding: 20px 0; gap: 8px; }
-        .nav-item { color: #94a3b8; text-align: center; padding: 15px 5px; cursor: pointer; transition: 0.3s; border-radius: 12px; margin: 0 10px; }
-        .nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
-        .nav-item.active { background: var(--s); color: white; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4); }
-        .nav-item i { font-size: 22px; display: block; margin-bottom: 6px; }
-        .nav-item span { font-size: 10px; font-weight: 700; text-transform: uppercase; }
+        /* POS PAGE */
+        .page { display: none; padding: 25px; height: calc(100vh - 70px); overflow-y: auto; animation: fadeIn 0.4s ease; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* VIEWPORT */
-        .viewport { flex: 1; padding: 25px; overflow-y: auto; }
-        .screen { display: none; animation: fadeIn 0.4s ease; }
-        .screen.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+        /* POS GRID */
+        .pos-grid { display: grid; grid-template-columns: 1fr 450px; gap: 25px; height: 100%; }
+        .menu-zone { display: flex; flex-direction: column; gap: 20px; }
+        .search-bar { background: white; padding: 15px; border-radius: 15px; display: flex; gap: 10px; border: 1px solid #e2e8f0; }
+        .search-bar input { flex: 1; border: none; outline: none; font-size: 16px; }
 
-        /* POS SALES LAYOUT */
-        .pos-layout { display: grid; grid-template-columns: 1fr 420px; height: 82vh; gap: 20px; }
-        .product-wall { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; overflow-y: auto; align-content: start; }
-        .p-card { background: white; border-radius: 16px; padding: 20px; text-align: center; cursor: pointer; border: 1px solid #e2e8f0; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .p-card:hover { border-color: var(--s); transform: translateY(-3px); }
-        .p-card .icon { font-size: 40px; margin-bottom: 12px; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; overflow-y: auto; }
+        .product-card { background: white; border-radius: 20px; padding: 20px; text-align: center; cursor: pointer; border: 2px solid transparent; transition: 0.3s; position: relative; }
+        .product-card:hover { border-color: var(--secondary); transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        .product-card .price-tag { position: absolute; top: 10px; right: 10px; background: #dbeafe; color: var(--secondary); padding: 4px 8px; border-radius: 10px; font-size: 11px; font-weight: 800; }
+        .product-card .emoji { font-size: 45px; margin-bottom: 10px; }
 
-        /* CART & PAYMENTS */
-        .cart-panel { background: white; border-radius: 24px; display: flex; flex-direction: column; border: 1px solid #e2e8f0; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); overflow: hidden; }
-        .cart-list { flex: 1; padding: 20px; overflow-y: auto; }
-        .cart-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #f1f5f9; }
-        
-        .pay-methods { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 20px; margin-bottom: 15px; }
-        .pay-btn { padding: 12px; border: 1px solid #ddd; border-radius: 12px; cursor: pointer; text-align: center; font-size: 12px; font-weight: 700; background: #f8fafc; }
-        .pay-btn.active { background: var(--s); color: white; border-color: var(--s); }
+        /* GIỎ HÀNG (STATION) */
+        .cart-station { background: white; border-radius: 25px; display: flex; flex-direction: column; box-shadow: 0 15px 30px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
+        .cart-header { padding: 25px; border-bottom: 2px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
+        .cart-items { flex: 1; padding: 20px; overflow-y: auto; }
+        .c-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 12px; background: #f8fafc; border-radius: 15px; }
+        .c-item-info b { display: block; font-size: 15px; }
+        .c-item-info small { color: var(--secondary); font-weight: 700; }
 
-        .btn-confirm { width: 100%; padding: 22px; background: var(--success); color: white; border: none; font-size: 18px; font-weight: 800; cursor: pointer; transition: 0.3s; }
-        .btn-confirm:hover { filter: brightness(1.1); }
+        .payment-zone { padding: 25px; background: #f8fafc; border-radius: 0 0 25px 25px; }
+        .payment-methods { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .pay-btn { padding: 15px; border-radius: 15px; border: 2px solid #e2e8f0; cursor: pointer; text-align: center; font-weight: 800; background: white; transition: 0.2s; }
+        .pay-btn.active { background: var(--secondary); color: white; border-color: var(--secondary); }
 
-        /* TABLE MAP */
-        .table-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 20px; }
-        .table-box { height: 130px; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; font-weight: 800; transition: 0.3s; border: 3px solid transparent; }
-        .table-box.empty { background: #ecfdf5; color: #065f46; border-color: #d1fae5; }
-        .table-box.busy { background: #fef2f2; color: #991b1b; border-color: #fee2e2; }
+        .btn-pay-action { width: 100%; padding: 20px; border-radius: 18px; border: none; background: var(--success); color: white; font-size: 18px; font-weight: 900; cursor: pointer; box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3); }
+        .btn-pay-action:active { transform: scale(0.98); }
 
-        /* CHART & STATS */
-        .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 25px; }
-        .stat-card { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-        .stat-card small { color: #64748b; font-weight: 600; text-transform: uppercase; font-size: 11px; }
-        .stat-card div { font-size: 24px; font-weight: 900; margin-top: 5px; }
+        /* BÁO CÁO WIDGETS */
+        .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: white; padding: 25px; border-radius: 20px; border-bottom: 5px solid var(--secondary); }
+        .stat-card span { font-size: 13px; color: #64748b; font-weight: 600; text-transform: uppercase; }
+        .stat-card h2 { font-size: 28px; font-weight: 900; margin-top: 10px; }
+
+        /* TABLE UI */
+        .table-map { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 20px; }
+        .table-item { height: 140px; background: white; border-radius: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; position: relative; }
+        .table-item.available { border: 2px solid #dcfce7; color: #166534; }
+        .table-item.occupied { border: 2px solid #fee2e2; background: #fef2f2; color: #991b1b; }
+        .table-item.occupied::after { content: 'Đang dùng'; position: absolute; top: 10px; font-size: 9px; background: #f87171; color: white; padding: 2px 8px; border-radius: 10px; }
+        .table-item i { font-size: 35px; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="top-nav">
-        <div><i class="fas fa-bolt" style="color:var(--warning)"></i> <b>LGBANK ULTIMATE v7.0</b></div>
-        <div style="font-size: 13px;">
-            <i class="far fa-clock"></i> <span id="clock"></span> | 
-            <i class="fas fa-store"></i> Chi nhánh: Hồng Trà Hòa Bình
-        </div>
+    <div class="sidebar">
+        <div class="nav-link active" onclick="nav('pos-page', this)"><i class="fas fa-cash-register"></i><span>Bán hàng</span></div>
+        <div class="nav-link" onclick="nav('table-page', this)"><i class="fas fa-couch"></i><span>Sơ đồ</span></div>
+        <div class="nav-link" onclick="nav('report-page', this)"><i class="fas fa-chart-line"></i><span>Báo cáo</span></div>
+        <div class="nav-link" onclick="nav('menu-page', this)"><i class="fas fa-hamburger"></i><span>Thực đơn</span></div>
+        <div class="nav-link" onclick="resetApp()"><i class="fas fa-sync"></i><span>Reset</span></div>
     </div>
 
-    <div class="main-container">
-        <div class="sidebar">
-            <div class="nav-item active" onclick="openScreen('pos-view', this)"><i class="fas fa-cash-register"></i><span>Bán hàng</span></div>
-            <div class="nav-item" onclick="openScreen('table-view', this)"><i class="fas fa-border-all"></i><span>Sơ đồ bàn</span></div>
-            <div class="nav-item" onclick="openScreen('order-view', this)"><i class="fas fa-history"></i><span>Lịch sử</span></div>
-            <div class="nav-item" onclick="openScreen('report-view', this)"><i class="fas fa-chart-bar"></i><span>Báo cáo</span></div>
-            <div class="nav-item" onclick="openScreen('menu-view', this)"><i class="fas fa-edit"></i><span>Cài đặt</span></div>
+    <div class="main-content">
+        <div class="header">
+            <div>
+                <h2 id="branch-name">HỒNG TRÀ HOÀ BÌNH</h2>
+                <small style="color: #64748b">Hệ thống POS thông minh v8.0 ● <span id="clock"></span></small>
+            </div>
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <div style="text-align: right">
+                    <b>Gia Luân (Admin)</b><br><small style="color: var(--success)">Ca sáng: Đang mở</small>
+                </div>
+                <div style="width: 45px; height: 45px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center;">GL</div>
+            </div>
         </div>
 
-        <div class="viewport">
-            
-            <div id="pos-view" class="screen active">
-                <div class="pos-layout">
-                    <div class="product-wall" id="prod-wall"></div>
-                    <div class="cart-panel">
-                        <div style="padding:20px; font-weight:900; background:#f1f5f9; display:flex; justify-content:space-between">
-                            <span>ĐƠN HIỆN TẠI</span>
-                            <span id="order-id-tag">#...</span>
+        <div id="pos-page" class="page active">
+            <div class="pos-grid">
+                <div class="menu-zone">
+                    <div class="search-bar">
+                        <i class="fas fa-search" style="color: #94a3b8"></i>
+                        <input type="text" id="p-search" placeholder="Tìm kiếm món nhanh (VD: Hồng trà...)" onkeyup="filterItems()">
+                    </div>
+                    <div class="product-grid" id="menu-container"></div>
+                </div>
+                
+                <div class="cart-station">
+                    <div class="cart-header">
+                        <h3>ĐƠN HÀNG MỚI</h3>
+                        <button onclick="clearCart()" style="border:none; background:none; color:var(--danger); font-weight:700; cursor:pointer">XÓA HẾT</button>
+                    </div>
+                    <div class="cart-items" id="cart-box"></div>
+                    <div class="payment-zone">
+                        <div class="payment-methods">
+                            <div class="pay-btn active" id="btn-cash" onclick="setPay('Tiền mặt')"><i class="fas fa-money-bill-wave"></i> TIỀN MẶT</div>
+                            <div class="pay-btn" id="btn-qr" onclick="setPay('Chuyển khoản')"><i class="fas fa-qrcode"></i> QUÉT QR</div>
                         </div>
-                        <div class="cart-list" id="cart-list"></div>
-                        
-                        <div style="padding:15px 20px">
-                            <small style="font-weight:700; color:#64748b">PHƯƠNG THỨC THANH TOÁN</small>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-size:24px; font-weight:900">
+                            <span>TỔNG:</span><span id="total-display" style="color:var(--secondary)">0 đ</span>
                         </div>
-                        <div class="pay-methods">
-                            <div class="pay-btn active" id="pay-cash" onclick="setPayMethod('cash')"><i class="fas fa-money-bill-wave"></i><br>Tiền mặt</div>
-                            <div class="pay-btn" id="pay-bank" onclick="setPayMethod('bank')"><i class="fas fa-qrcode"></i><br>Chuyển khoản</div>
-                        </div>
-
-                        <div style="padding:20px; border-top:2px dashed #e2e8f0">
-                            <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-weight:600; color:#64748b">
-                                <span>Tạm tính</span><span id="sub-val">0 đ</span>
-                            </div>
-                            <div style="display:flex; justify-content:space-between; font-size:24px; font-weight:900; color:var(--p)">
-                                <span>TỔNG:</span><span id="total-val">0 đ</span>
-                            </div>
-                        </div>
-                        <button class="btn-confirm" onclick="processOrder()">THANH TOÁN & IN BILL</button>
+                        <button class="btn-pay-action" onclick="finishOrder()">XUẤT HÓA ĐƠN & THANH TOÁN</button>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div id="table-view" class="screen">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px">
-                    <h2>Quản lý phòng bàn</h2>
-                    <div style="display:flex; gap:20px">
-                        <span><i class="fas fa-circle" style="color:#10b981"></i> Trống</span>
-                        <span><i class="fas fa-circle" style="color:#ef4444"></i> Đang ngồi</span>
-                    </div>
-                </div>
-                <div class="table-grid" id="table-grid"></div>
+        <div id="table-page" class="page">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px">
+                <h2>Sơ đồ phòng bàn thực tế</h2>
+                <div id="table-stats" style="font-weight:700"></div>
             </div>
+            <div class="table-map" id="table-map"></div>
+        </div>
 
-            <div id="report-view" class="screen">
-                <div class="stat-grid">
-                    <div class="stat-card"><small>Tổng doanh thu</small><div id="stat-rev">0 đ</div></div>
-                    <div class="stat-card"><small>Đơn hoàn tất</small><div id="stat-orders">0</div></div>
-                    <div class="stat-card"><small>Tiền mặt</small><div id="stat-cash" style="color:var(--success)">0 đ</div></div>
-                    <div class="stat-card"><small>Chuyển khoản</small><div id="stat-bank" style="color:var(--s)">0 đ</div></div>
-                </div>
-                <div style="background:white; padding:30px; border-radius:24px; height:450px">
-                    <h3 style="margin-bottom:20px">Phân tích doanh thu thời gian thực</h3>
-                    <canvas id="mainChart"></canvas>
-                </div>
+        <div id="report-page" class="page">
+            <div class="stat-grid">
+                <div class="stat-card"><span>Doanh thu</span><h2 id="st-rev">0 đ</h2></div>
+                <div class="stat-card"><span>Số đơn</span><h2 id="st-orders">0</h2></div>
+                <div class="stat-card"><span>Tồn kho món</span><h2 id="st-items">4</h2></div>
+                <div class="stat-card"><span>Khách vãng lai</span><h2>28</h2></div>
             </div>
-
-            <div id="order-view" class="screen">
-                <h2>Nhật ký bán hàng</h2>
-                <div style="margin-top:20px" id="order-log-container"></div>
+            <div style="background:white; padding:30px; border-radius:25px; height: 400px;">
+                <canvas id="salesChart"></canvas>
             </div>
-
-            <div id="menu-view" class="screen">
-                <div style="display:flex; justify-content:space-between">
-                    <h2>Cấu hình sản phẩm</h2>
-                    <button class="pay-btn active" style="padding:10px 25px" onclick="addNewProduct()">+ Thêm món mới</button>
-                </div>
-                <div id="menu-edit-list" style="margin-top:20px"></div>
+        </div>
+        
+        <div id="menu-page" class="page">
+            <div style="display:flex; justify-content:space-between; margin-bottom:20px">
+                <h2>Cấu hình danh mục sản phẩm</h2>
+                <button class="btn-pay-action" style="width:auto; padding:10px 25px" onclick="addItem()">+ Thêm món</button>
             </div>
-
+            <div id="menu-list-admin"></div>
         </div>
     </div>
 
 <script>
-    // --- DATABASE & STATE ---
-    let menu = JSON.parse(localStorage.getItem('LGB_MENU_V7')) || [
-        { id: 1, name: 'Hồng Trà Sữa', price: 25000, icon: '🧋' },
-        { id: 2, name: 'Cà Phê Muối', price: 35000, icon: '☕' },
-        { id: 3, name: 'Trà Đào Cam Sả', price: 45000, icon: '🍹' },
-        { id: 4, name: 'Bánh Mì Que', price: 15000, icon: '🥖' }
+    // --- DATABASE ---
+    let products = JSON.parse(localStorage.getItem('LGP_P')) || [
+        { id: 1, name: 'Hồng Trà Sữa', price: 25000, emoji: '🧋' },
+        { id: 2, name: 'Cà Phê Muối', price: 35000, emoji: '☕' },
+        { id: 3, name: 'Trà Đào Cam Sả', price: 45000, emoji: '🍹' },
+        { id: 4, name: 'Bánh Tiramisu', price: 55000, emoji: '🍰' }
     ];
-    let tables = Array.from({length: 12}, (_, i) => ({ id: i+1, status: 'empty' }));
-    let orders = JSON.parse(localStorage.getItem('LGB_ORDERS_V7')) || [];
-    let currentCart = [];
-    let currentMethod = 'cash';
+    let tables = Array.from({length: 15}, (_, i) => ({ id: i+1, status: Math.random() > 0.4 ? 'available' : 'occupied' }));
+    let history = JSON.parse(localStorage.getItem('LGP_H')) || [];
+    let cart = [];
+    let currentPay = 'Tiền mặt';
 
-    // --- INITIALIZATION ---
+    // --- LOGIC ---
     function init() {
-        renderProducts();
+        renderMenu();
         renderTables();
-        updateStats();
+        updateDisplay();
         updateClock();
         setInterval(updateClock, 1000);
-        document.getElementById('order-id-tag').innerText = '#' + Date.now().toString().slice(-6);
     }
 
-    function updateClock() { document.getElementById('clock').innerText = new Date().toLocaleString('vi-VN'); }
-
-    function openScreen(id, el) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    function nav(id, el) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         el.classList.add('active');
-        if(id === 'report-view') initChart();
-        if(id === 'order-view') renderOrderLog();
-        if(id === 'menu-view') renderMenuEdit();
+        if(id === 'report-page') initChart();
+        if(id === 'menu-page') renderAdminMenu();
     }
 
-    // --- POS CORE ---
-    function renderProducts() {
-        document.getElementById('prod-wall').innerHTML = menu.map(p => `
-            <div class="p-card" onclick="addToCart(${p.id})">
-                <div class="icon">${p.icon}</div>
+    function renderMenu() {
+        document.getElementById('menu-container').innerHTML = products.map(p => `
+            <div class="product-card" onclick="addToCart(${p.id})">
+                <span class="price-tag">${p.price.toLocaleString()}</span>
+                <div class="emoji">${p.emoji}</div>
                 <div style="font-weight:800; font-size:14px">${p.name}</div>
-                <div style="color:var(--s); font-weight:900; margin-top:5px">${p.price.toLocaleString()} đ</div>
             </div>
         `).join('');
     }
 
     function addToCart(id) {
-        const item = menu.find(m => m.id === id);
-        currentCart.push(item);
+        const p = products.find(x => x.id === id);
+        cart.push(p);
         updateCartUI();
+        // Play click sound
+        new Audio('https://www.soundjay.com/buttons/button-21.mp3').play().catch(()=>{});
     }
 
     function updateCartUI() {
-        const list = document.getElementById('cart-list');
-        if(currentCart.length === 0) {
-            list.innerHTML = `<div style="text-align:center; color:#94a3b8; margin-top:40px">Chưa có sản phẩm nào</div>`;
-        } else {
-            list.innerHTML = currentCart.map((item, idx) => `
-                <div class="cart-item">
-                    <div><b>${item.name}</b><br><small>${item.price.toLocaleString()} đ</small></div>
-                    <i class="fas fa-times-circle" style="color:var(--danger); cursor:pointer" onclick="removeItem(${idx})"></i>
-                </div>
-            `).join('');
-        }
-        const total = currentCart.reduce((sum, i) => sum + i.price, 0);
-        document.getElementById('sub-val').innerText = total.toLocaleString() + ' đ';
-        document.getElementById('total-val').innerText = total.toLocaleString() + ' đ';
+        const box = document.getElementById('cart-box');
+        box.innerHTML = cart.map((item, idx) => `
+            <div class="c-item">
+                <div class="c-item-info"><b>${item.name}</b><small>${item.price.toLocaleString()} đ</small></div>
+                <i class="fas fa-minus-circle" style="color:var(--danger); cursor:pointer" onclick="removeFromCart(${idx})"></i>
+            </div>
+        `).join('');
+        const total = cart.reduce((s, i) => s + i.price, 0);
+        document.getElementById('total-display').innerText = total.toLocaleString() + ' đ';
     }
 
-    function removeItem(idx) {
-        currentCart.splice(idx, 1);
+    function removeFromCart(idx) {
+        cart.splice(idx, 1);
         updateCartUI();
     }
 
-    function setPayMethod(m) {
-        currentMethod = m;
-        document.getElementById('pay-cash').classList.toggle('active', m === 'cash');
-        document.getElementById('pay-bank').classList.toggle('active', m === 'bank');
+    function setPay(m) {
+        currentPay = m;
+        document.getElementById('btn-cash').classList.toggle('active', m === 'Tiền mặt');
+        document.getElementById('btn-qr').classList.toggle('active', m === 'Chuyển khoản');
     }
 
-    function processOrder() {
-        if(currentCart.length === 0) return;
-        const total = currentCart.reduce((sum, i) => sum + i.price, 0);
+    function finishOrder() {
+        if(cart.length === 0) return;
+        const total = cart.reduce((s, i) => s + i.price, 0);
         
         Swal.fire({
-            title: 'XÁC NHẬN ĐƠN HÀNG',
-            html: `Phương thức: <b>${currentMethod === 'cash' ? 'Tiền mặt' : 'Chuyển khoản'}</b><br>Tổng tiền: <h2 style="color:var(--success)">${total.toLocaleString()} đ</h2>`,
+            title: 'XỬ LÝ THANH TOÁN',
+            html: `Hình thức: <b>${currentPay}</b><br>Tiền cần thu: <h2 style="color:var(--secondary)">${total.toLocaleString()} đ</h2>`,
             showCancelButton: true,
-            confirmButtonText: 'IN HÓA ĐƠN'
+            confirmButtonText: 'HOÀN TẤT & IN BILL'
         }).then(res => {
             if(res.isConfirmed) {
-                const newOrder = {
-                    id: '#' + Date.now().toString().slice(-6),
-                    time: new Date().toLocaleTimeString(),
-                    total: total,
-                    method: currentMethod,
-                    items: [...currentCart]
-                };
-                orders.unshift(newOrder);
-                localStorage.setItem('LGB_ORDERS_V7', JSON.stringify(orders));
+                const order = { id: Date.now(), total, time: new Date().toLocaleTimeString(), method: currentPay };
+                history.push(order);
+                localStorage.setItem('LGP_H', JSON.stringify(history));
                 
-                Swal.fire('Thành công', 'Hóa đơn đã được xuất!', 'success');
-                currentCart = [];
-                updateCartUI();
-                updateStats();
-                document.getElementById('order-id-tag').innerText = '#' + Date.now().toString().slice(-6);
+                // Sound ting ting
+                new Audio('https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3').play().catch(()=>{});
+                
+                Swal.fire('Thành công', 'Đơn hàng đã được lưu!', 'success');
+                cart = []; updateCartUI(); updateDisplay();
             }
         });
     }
 
-    // --- TABLES ---
     function renderTables() {
-        document.getElementById('table-grid').innerHTML = tables.map(t => `
-            <div class="table-box ${t.status}" onclick="toggleTable(${t.id})">
-                <i class="fas fa-couch" style="font-size:30px; margin-bottom:10px"></i>
-                BÀN ${t.id}
+        document.getElementById('table-map').innerHTML = tables.map(t => `
+            <div class="table-item ${t.status}" onclick="toggleTable(${t.id})">
+                <i class="fas fa-couch"></i>
+                <b>BÀN ${t.id}</b>
             </div>
         `).join('');
+        const busy = tables.filter(t => t.status === 'occupied').length;
+        document.getElementById('table-stats').innerText = `Đang phục vụ: ${busy}/${tables.length}`;
     }
+
     function toggleTable(id) {
         const t = tables.find(x => x.id === id);
-        t.status = t.status === 'empty' ? 'busy' : 'empty';
+        t.status = t.status === 'available' ? 'occupied' : 'available';
         renderTables();
     }
 
-    // --- ANALYTICS ---
-    function updateStats() {
-        const total = orders.reduce((s, o) => s + o.total, 0);
-        const cash = orders.filter(o => o.method === 'cash').reduce((s, o) => s + o.total, 0);
-        const bank = orders.filter(o => o.method === 'bank').reduce((s, o) => s + o.total, 0);
-        
-        document.getElementById('stat-rev').innerText = total.toLocaleString() + ' đ';
-        document.getElementById('stat-orders').innerText = orders.length;
-        document.getElementById('stat-cash').innerText = cash.toLocaleString() + ' đ';
-        document.getElementById('stat-bank').innerText = bank.toLocaleString() + ' đ';
+    function updateDisplay() {
+        const rev = history.reduce((s, o) => s + o.total, 0);
+        document.getElementById('st-rev').innerText = rev.toLocaleString() + ' đ';
+        document.getElementById('st-orders').innerText = history.length;
+    }
+
+    function filterItems() {
+        const val = document.getElementById('p-search').value.toLowerCase();
+        const cards = document.querySelectorAll('.product-card');
+        cards.forEach(c => {
+            const name = c.innerText.toLowerCase();
+            c.style.display = name.includes(val) ? 'block' : 'none';
+        });
     }
 
     function initChart() {
-        const ctx = document.getElementById('mainChart').getContext('2d');
+        const ctx = document.getElementById('salesChart').getContext('2d');
         if(window.lgChart) window.lgChart.destroy();
         window.lgChart = new Chart(ctx, {
-            type: 'line',
+            type: 'bar',
             data: {
-                labels: ['08:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00'],
+                labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4'],
                 datasets: [{
-                    label: 'Doanh thu',
-                    data: [400000, 1200000, 2500000, 1800000, 3200000, 4800000, 5200000],
-                    borderColor: '#3b82f6',
-                    tension: 0.4, fill: true, backgroundColor: 'rgba(59, 130, 246, 0.1)'
+                    label: 'Doanh thu triệu đồng',
+                    data: [45, 52, 38, 65],
+                    backgroundColor: '#3b82f6',
+                    borderRadius: 10
                 }]
             },
             options: { maintainAspectRatio: false }
         });
     }
 
-    function renderOrderLog() {
-        const container = document.getElementById('order-log-container');
-        container.innerHTML = orders.map(o => `
+    function renderAdminMenu() {
+        document.getElementById('menu-list-admin').innerHTML = products.map((p, idx) => `
             <div style="background:white; padding:15px; border-radius:15px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center">
-                <div><b>${o.id}</b> | ${o.time}</div>
-                <div>${o.method === 'cash' ? '💵' : '💳'} <b>${o.total.toLocaleString()} đ</b></div>
+                <div>${p.emoji} <b>${p.name}</b> - ${p.price.toLocaleString()} đ</div>
+                <button onclick="deleteP(${idx})" style="border:none; color:red; cursor:pointer">Xóa</button>
             </div>
         `).join('');
     }
 
-    function renderMenuEdit() {
-        const container = document.getElementById('menu-edit-list');
-        container.innerHTML = menu.map((p, idx) => `
-            <div style="background:white; padding:15px; border-radius:15px; margin-bottom:10px; display:flex; justify-content:space-between">
-                <div>${p.icon} <b>${p.name}</b> - ${p.price.toLocaleString()} đ</div>
-                <i class="fas fa-trash" style="color:var(--danger); cursor:pointer" onclick="deleteMenu(${idx})"></i>
-            </div>
-        `).join('');
-    }
-
-    function deleteMenu(idx) {
-        menu.splice(idx, 1);
-        localStorage.setItem('LGB_MENU_V7', JSON.stringify(menu));
-        renderProducts(); renderMenuEdit();
-    }
-
-    function addNewProduct() {
+    function deleteP(idx) { products.splice(idx, 1); localStorage.setItem('LGP_P', JSON.stringify(products)); renderMenu(); renderAdminMenu(); }
+    
+    function addItem() {
         Swal.fire({
-            title: 'Thêm món mới',
-            html: `<input id="n" class="swal2-input" placeholder="Tên món"><input id="p" type="number" class="swal2-input" placeholder="Giá">`,
+            title: 'Món mới',
+            html: `<input id="n" class="swal2-input" placeholder="Tên"><input id="p" type="number" class="swal2-input" placeholder="Giá">`,
             preConfirm: () => ({ name: document.getElementById('n').value, price: parseInt(document.getElementById('p').value) })
         }).then(r => {
             if(r.isConfirmed) {
-                menu.push({ id: Date.now(), name: r.value.name, price: r.value.price, icon: '🥤' });
-                localStorage.setItem('LGB_MENU_V7', JSON.stringify(menu));
-                renderProducts(); renderMenuEdit();
+                products.push({ id: Date.now(), name: r.value.name, price: r.value.price, emoji: '🥤' });
+                localStorage.setItem('LGP_P', JSON.stringify(products));
+                renderMenu(); renderAdminMenu();
             }
         });
     }
+
+    function updateClock() { document.getElementById('clock').innerText = new Date().toLocaleString('vi-VN'); }
+    function resetApp() { localStorage.clear(); location.reload(); }
 
     init();
 </script>
